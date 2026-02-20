@@ -93,3 +93,7 @@ void ARollingBallGameCharacter::Look(const double X, const double Y)
 	AddControllerPitchInput(Y);
 }
 
+void ARollingBallGameCharacter::Jump() const
+{
+	Sphere->AddImpulse(FVector(0.0f, 0.0f, 1.0f) * JumpForce, NAME_None, true);
+}

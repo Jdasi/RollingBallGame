@@ -39,7 +39,7 @@ void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 	
 	if (ActionJump)
 	{
-		EnhancedInputComponent->BindAction(ActionJump, ETriggerEvent::Triggered, this, &ARollingBallGamePlayerController::HandleJump);
+		EnhancedInputComponent->BindAction(ActionJump, ETriggerEvent::Started, this, &ARollingBallGamePlayerController::HandleJump);
 	}
 }
 
@@ -68,6 +68,8 @@ void ARollingBallGamePlayerController::HandleMouseLook(const FInputActionValue& 
 	HandleLook(InputActionValue);
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::HandleJump(const FInputActionValue& InputActionValue)
 {
+	RollingBall->Jump();
 }

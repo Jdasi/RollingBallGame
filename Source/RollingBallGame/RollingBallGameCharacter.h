@@ -17,10 +17,13 @@ class ROLLINGBALLGAME_API ARollingBallGameCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(Editanywhere, Category="Movement");
+	UPROPERTY(EditAnywhere, Category="Ability");
+	float JumpForce = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category="Ability");
 	float TorqueForce = 200000.0f;
 	
-	UPROPERTY(Editanywhere, Category="Movement");
+	UPROPERTY(EditAnywhere, Category="Ability");
 	float MaxAngularVelocity = 10.0f;
 	
 	ARollingBallGameCharacter();
@@ -29,6 +32,7 @@ public:
 	
 	void Move(FVector2d X) const;
 	void Look(const double X, const double Y);
+	void Jump() const;
 
 protected:
 	virtual void BeginPlay() override;
