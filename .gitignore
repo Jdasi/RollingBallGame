@@ -1,5 +1,12 @@
+# Rider specific
+.idea/
+
 # Visual Studio 2015 user specific files
 .vs/
+
+# Logs
+*.log
+*.dmp
 
 # Compiled Object files
 *.slo
