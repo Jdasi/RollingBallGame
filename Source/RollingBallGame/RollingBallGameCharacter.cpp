@@ -65,13 +65,18 @@ void ARollingBallGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// has no effect in the Ctor for some reason
 	Sphere->SetPhysicsMaxAngularVelocityInRadians(MaxAngularVelocity);
+
+	JumpCharges = MaxJumpCharges;
 }
 
 void ARollingBallGameCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	dt = DeltaTime;
+
+	HandleGroundedJumpRecharge();
 }
 
 void ARollingBallGameCharacter::Move(FVector2d Move) const
@@ -80,10 +85,10 @@ void ARollingBallGameCharacter::Move(FVector2d Move) const
 	{
 		Move.Normalize();
 	}
-	
+
 	const FVector3d Forward = FollowCamera->GetForwardVector() * -Move.X * TorqueForce * dt;
 	const FVector3d Right = FollowCamera->GetRightVector() * Move.Y * TorqueForce * dt;
-	
+
 	Sphere->AddTorqueInDegrees(Forward + Right, NAME_None, true);
 }
 
@@ -93,7 +98,48 @@ void ARollingBallGameCharacter::Look(const double X, const double Y)
 	AddControllerPitchInput(Y);
 }
 
-void ARollingBallGameCharacter::Jump() const
+void ARollingBallGameCharacter::Jump()
 {
-	Sphere->AddImpulse(FVector(0.0f, 0.0f, 1.0f) * JumpForce, NAME_None, true);
+	if (JumpCharges <= 0)
+	{
+		return;
+	}
+
+	const FVector Velocity = Sphere->GetPhysicsLinearVelocity();
+	FVector Impulse = FVector(0.0f, 0.0f, 1.0f) * JumpForce;
+
+	if (Velocity.Z < 0)
+	{
+		// make jump consistent even while falling
+		Impulse.Z += -Velocity.Z;
+	}
+
+	Sphere->AddImpulse(Impulse, NAME_None, true);
+	AdjustJumpCharges(-1, EJumpChargeAdjustReasons::Jumped);
+}
+
+void ARollingBallGameCharacter::HandleGroundedJumpRecharge()
+{
+	if (JumpCharges >= MaxJumpCharges)
+	{
+		return;
+	}
+
+	JumpRechargeTimer -= dt;
+
+	if (JumpRechargeTimer > 0.0f)
+	{
+		return;
+	}
+
+	AdjustJumpCharges(1, EJumpChargeAdjustReasons::GroundedRecharge);
+}
+
+void ARollingBallGameCharacter::AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason)
+{
+	//int PrevCharges = JumpCharges;
+	JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
+	JumpRechargeTimer = JumpRecoverDelay;
+
+	// TODO - notify of change (prev value, new value)
 }
