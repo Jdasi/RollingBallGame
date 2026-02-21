@@ -8,7 +8,7 @@
 ARollingBallGameCharacter::ARollingBallGameCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	if (Sphere)
 	{
@@ -21,7 +21,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		Sphere->CanCharacterStepUpOn = ECB_No;
 		Sphere->bDynamicObstacle = true;
 	}
-	
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	if (Mesh)
 	{
@@ -34,7 +34,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		Mesh->bAffectDynamicIndirectLighting = true;
 		Mesh->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 	}
-	
+
 	// create the camera boom
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	if (CameraBoom)
@@ -44,7 +44,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		CameraBoom->bUsePawnControlRotation = true;
 		CameraBoom->bEnableCameraLag = true;
 		CameraBoom->CameraLagSpeed = 8.0f;
-		CameraBoom->bEnableCameraRotationLag = true;	
+		CameraBoom->bEnableCameraRotationLag = true;
 		CameraBoom->CameraRotationLagSpeed = 4.0f;
 	}
 
@@ -55,7 +55,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 		FollowCamera->bUsePawnControlRotation = false;
 	}
-	
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -64,7 +64,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 void ARollingBallGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// has no effect in the Ctor for some reason
 	Sphere->SetPhysicsMaxAngularVelocityInRadians(MaxAngularVelocity);
 
@@ -137,9 +137,8 @@ void ARollingBallGameCharacter::HandleGroundedJumpRecharge()
 
 void ARollingBallGameCharacter::AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason)
 {
-	//int PrevCharges = JumpCharges;
+	const int PrevCharges = JumpCharges;
 	JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
 	JumpRechargeTimer = JumpRecoverDelay;
-
-	// TODO - notify of change (prev value, new value)
+	JumpChargesChanged.ExecuteIfBound(PrevCharges, JumpCharges);
 }

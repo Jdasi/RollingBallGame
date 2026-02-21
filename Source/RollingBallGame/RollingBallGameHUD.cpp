@@ -1,0 +1,36 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "RollingBallGameHUD.h"
+#include "RollingBallGameCharacter.h"
+#include "UI/GameViewWidget.h"
+#include "UI/JumpChargeGroupWidget.h"
+
+void ARollingBallGameHUD::BeginPlay()
+{
+    Super::BeginPlay();
+
+    GameViewWidget = CreateWidget<UGameViewWidget>(GetWorld(), GameViewClass);
+    GameViewWidget->AddToViewport();
+
+    if (const APlayerController* RollingBallController = GetOwningPlayerController())
+    {
+        RollingBall = Cast<ARollingBallGameCharacter>(RollingBallController->GetPawn());
+        RollingBall->JumpChargesChanged.BindDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
+    }
+}
+
+void ARollingBallGameHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+
+    if (RollingBall)
+    {
+        RollingBall->JumpChargesChanged.Unbind();
+    }
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ARollingBallGameHUD::OnRollingBallJumpChargesChanged(const int OldValue, const int NewValue)
+{
+    GameViewWidget->JumpChargeGroup->RefreshJumpCharges(NewValue);
+}

@@ -34,14 +34,20 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Abilities");
 	float TorqueForce = 200000.0f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Abilities");
 	float MaxAngularVelocity = 10.0f;
-	
+
+	DECLARE_DYNAMIC_DELEGATE_TwoParams(FRollingBallJumpChargesChanged,
+		int32, OldValue,
+		int32, NewValue);
+	UPROPERTY(BlueprintReadOnly, Category="Events")
+	FRollingBallJumpChargesChanged JumpChargesChanged;
+
 	ARollingBallGameCharacter();
-	
+
 	virtual void Tick(float DeltaTime) override;
-	
+
 	void Move(FVector2d X) const;
 	void Look(const double X, const double Y);
 	void Jump();
@@ -61,7 +67,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera = nullptr;
-	
+
 	void HandleGroundedJumpRecharge();
 	void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
 
