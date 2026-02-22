@@ -3,7 +3,7 @@
 #include "RollingBallGameCharacter.h"
 #include "ActorComponents/BallJumpComponent.h"
 #include "ActorComponents/BallMoveComponent.h"
-#include "ActorComponents/LaunchAimComponent.h"
+#include "ActorComponents/LaunchAbilityComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -59,7 +59,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 
 	MoveComponent = CreateDefaultSubobject<UBallMoveComponent>(TEXT("MoveComponent"));
 	JumpComponent = CreateDefaultSubobject<UBallJumpComponent>(TEXT("JumpComponent"));
-	LaunchAimComponent = CreateDefaultSubobject<ULaunchAimComponent>(TEXT("LaunchAimComponent"));
+	LaunchAbilityComponent = CreateDefaultSubobject<ULaunchAbilityComponent>(TEXT("LaunchAbilityComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;

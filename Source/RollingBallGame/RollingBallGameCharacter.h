@@ -10,7 +10,7 @@ class UBallMoveComponent;
 class UBallJumpComponent;
 class UCameraComponent;
 class UCharacterMovementComponent;
-class ULaunchAimComponent;
+class ULaunchAbilityComponent;
 class USphereComponent;
 class USpringArmComponent;
 
@@ -27,7 +27,7 @@ public:
 	UBallJumpComponent* JumpComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category="Components")
-	ULaunchAimComponent* LaunchAimComponent = nullptr;
+	ULaunchAbilityComponent* LaunchAbilityComponent = nullptr;
 
 	ARollingBallGameCharacter();
 

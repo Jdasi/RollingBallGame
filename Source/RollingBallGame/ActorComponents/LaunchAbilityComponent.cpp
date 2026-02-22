@@ -1,17 +1,17 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "LaunchAimComponent.h"
+#include "LaunchAbilityComponent.h"
 #include "RollingBallGameCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Subsystems/TimeDilationSubsystem.h"
 
-ULaunchAimComponent::ULaunchAimComponent()
+ULaunchAbilityComponent::ULaunchAbilityComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
 }
 
-void ULaunchAimComponent::StartAim()
+void ULaunchAbilityComponent::StartAim()
 {
     if (!AimRequested)
     {
@@ -22,13 +22,13 @@ void ULaunchAimComponent::StartAim()
     AimActive = true;
 }
 
-void ULaunchAimComponent::EndAim()
+void ULaunchAbilityComponent::EndAim()
 {
     AimRequested = false;
     ExitTimer = ExitAimDelay;
 }
 
-void ULaunchAimComponent::BeginPlay()
+void ULaunchAbilityComponent::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -42,7 +42,7 @@ void ULaunchAimComponent::BeginPlay()
     InitialCameraRotationLag = CameraBoom->CameraRotationLagSpeed;
 }
 
-void ULaunchAimComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void ULaunchAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -83,7 +83,7 @@ void ULaunchAimComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
     }
 }
 
-void ULaunchAimComponent::SetTimeDilationActive(bool Active) const
+void ULaunchAbilityComponent::SetTimeDilationActive(bool Active) const
 {
     const FName RequesterId = FName("RollingBall");
 

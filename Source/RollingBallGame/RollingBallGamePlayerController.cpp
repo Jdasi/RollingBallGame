@@ -6,7 +6,7 @@
 #include "RollingBallGameCharacter.h"
 #include "ActorComponents/BallJumpComponent.h"
 #include "ActorComponents/BallMoveComponent.h"
-#include "ActorComponents/LaunchAimComponent.h"
+#include "ActorComponents/LaunchAbilityComponent.h"
 #include "Engine/LocalPlayer.h"
 
 void ARollingBallGamePlayerController::BeginPlay()
@@ -87,12 +87,12 @@ void ARollingBallGamePlayerController::HandleJump(const FInputActionValue& Input
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::StartAim(const FInputActionValue& InputActionValue)
 {
-	RollingBall->LaunchAimComponent->StartAim();
+	RollingBall->LaunchAbilityComponent->StartAim();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::EndAim(const FInputActionValue& InputActionValue)
 {
-	RollingBall->LaunchAimComponent->EndAim();
+	RollingBall->LaunchAbilityComponent->EndAim();
 }
 

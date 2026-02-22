@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "LaunchAimComponent.generated.h"
+#include "LaunchAbilityComponent.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class ROLLINGBALLGAME_API ULaunchAimComponent : public UActorComponent
+class ROLLINGBALLGAME_API ULaunchAbilityComponent : public UActorComponent
 {
     GENERATED_BODY()
 
@@ -42,7 +42,7 @@ public:
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
     float CameraRotationLagLerpSpeed = 10.0f;
 
-    ULaunchAimComponent();
+    ULaunchAbilityComponent();
 
     void StartAim();
     void EndAim();
