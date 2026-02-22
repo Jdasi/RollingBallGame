@@ -3,8 +3,11 @@
 #include "RollingBallGamePlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Engine/LocalPlayer.h"
 #include "RollingBallGameCharacter.h"
+#include "ActorComponents/BallJumpComponent.h"
+#include "ActorComponents/BallMoveComponent.h"
+#include "ActorComponents/LaunchAimComponent.h"
+#include "Engine/LocalPlayer.h"
 
 void ARollingBallGamePlayerController::BeginPlay()
 {
@@ -59,14 +62,15 @@ void ARollingBallGamePlayerController::OnUnPossess()
 void ARollingBallGamePlayerController::HandleMove(const FInputActionValue& InputActionValue)
 {
 	const FVector2d MovementVector = InputActionValue.Get<FVector2D>();
-	RollingBall->Move(MovementVector);
+	RollingBall->MoveComponent->Move(MovementVector);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::HandleLook(const FInputActionValue& InputActionValue)
 {
 	const FVector2d LookAxisVector = InputActionValue.Get<FVector2D>();
-	RollingBall->Look(LookAxisVector.X * LookSensitivity.X, LookAxisVector.Y * LookSensitivity.Y);
+	AddYawInput(LookAxisVector.X * LookSensitivity.X);
+	AddPitchInput(LookAxisVector.Y * LookSensitivity.Y);
 }
 
 void ARollingBallGamePlayerController::HandleMouseLook(const FInputActionValue& InputActionValue)
@@ -77,18 +81,18 @@ void ARollingBallGamePlayerController::HandleMouseLook(const FInputActionValue& 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::HandleJump(const FInputActionValue& InputActionValue)
 {
-	RollingBall->Jump();
+	RollingBall->JumpComponent->Jump();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::StartAim(const FInputActionValue& InputActionValue)
 {
-	RollingBall->StartAim();
+	RollingBall->LaunchAimComponent->StartAim();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::EndAim(const FInputActionValue& InputActionValue)
 {
-	RollingBall->EndAim();
+	RollingBall->LaunchAimComponent->EndAim();
 }
 

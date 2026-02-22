@@ -2,6 +2,7 @@
 
 #include "RollingBallGameHUD.h"
 #include "RollingBallGameCharacter.h"
+#include "ActorComponents/BallJumpComponent.h"
 #include "UI/GameViewWidget.h"
 #include "UI/JumpChargeGroupWidget.h"
 
@@ -15,7 +16,7 @@ void ARollingBallGameHUD::BeginPlay()
     if (const APlayerController* RollingBallController = GetOwningPlayerController())
     {
         RollingBall = Cast<ARollingBallGameCharacter>(RollingBallController->GetPawn());
-        RollingBall->JumpChargesChanged.BindDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
+        RollingBall->JumpComponent->JumpChargesChanged.BindDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
     }
 }
 
@@ -25,7 +26,7 @@ void ARollingBallGameHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     if (RollingBall)
     {
-        RollingBall->JumpChargesChanged.Unbind();
+        RollingBall->JumpComponent->JumpChargesChanged.Unbind();
     }
 }
 

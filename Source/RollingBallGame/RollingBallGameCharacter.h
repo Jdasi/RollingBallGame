@@ -6,16 +6,13 @@
 #include "GameFramework/Pawn.h"
 #include "RollingBallGameCharacter.generated.h"
 
-class USphereComponent;
-class UCharacterMovementComponent;
-class USpringArmComponent;
+class UBallMoveComponent;
+class UBallJumpComponent;
 class UCameraComponent;
-
-enum EJumpChargeAdjustReasons
-{
-	Jumped,
-	GroundedRecharge,
-};
+class UCharacterMovementComponent;
+class ULaunchAimComponent;
+class USphereComponent;
+class USpringArmComponent;
 
 UCLASS(Abstract)
 class ROLLINGBALLGAME_API ARollingBallGameCharacter : public APawn
@@ -23,36 +20,22 @@ class ROLLINGBALLGAME_API ARollingBallGameCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category="Abilities");
-	float JumpRecoverDelay = 3.0f;
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	UBallMoveComponent* MoveComponent = nullptr;
 
-	UPROPERTY(EditAnywhere, Category="Abilities");
-	int MaxJumpCharges = 3;
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	UBallJumpComponent* JumpComponent = nullptr;
 
-	UPROPERTY(EditAnywhere, Category="Abilities");
-	float JumpForce = 10.0f;
-
-	UPROPERTY(EditAnywhere, Category="Abilities");
-	float TorqueForce = 200000.0f;
-
-	UPROPERTY(EditAnywhere, Category="Abilities");
-	float MaxAngularVelocity = 10.0f;
-
-	DECLARE_DYNAMIC_DELEGATE_TwoParams(FRollingBallJumpChargesChanged,
-		int32, OldValue,
-		int32, NewValue);
-	UPROPERTY(BlueprintReadOnly, Category="Events")
-	FRollingBallJumpChargesChanged JumpChargesChanged;
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	ULaunchAimComponent* LaunchAimComponent = nullptr;
 
 	ARollingBallGameCharacter();
 
 	virtual void Tick(float DeltaTime) override;
 
-	void Move(FVector2d Move) const;
-	void Look(const double X, const double Y);
-	void Jump();
-	void StartAim() const;
-	void EndAim() const;
+	FORCEINLINE USphereComponent* GetSphere() const { return Sphere; }
+	FORCEINLINE UCameraComponent* GetCamera() const { return FollowCamera; }
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -69,11 +52,4 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera = nullptr;
-
-	void HandleGroundedJumpRecharge();
-	void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
-
-	float JumpRechargeTimer = 0;
-	int JumpCharges = 0;
-	bool IsGrounded = false;
 };
