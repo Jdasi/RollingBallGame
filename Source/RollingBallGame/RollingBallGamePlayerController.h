@@ -26,6 +26,8 @@ protected:
 	void HandleLook(const FInputActionValue& InputActionValue);
 	void HandleMouseLook(const FInputActionValue& InputActionValue);
 	void HandleJump(const FInputActionValue& InputActionValue);
+	void StartAim(const FInputActionValue& InputActionValue);
+	void EndAim(const FInputActionValue& InputActionValue);
 	
 private:
 	UPROPERTY()
@@ -51,4 +53,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
 	UInputAction* ActionMouseLook = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
+	UInputAction* ActionAim = nullptr;
 };

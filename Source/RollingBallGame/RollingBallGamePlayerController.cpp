@@ -41,6 +41,12 @@ void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 	{
 		EnhancedInputComponent->BindAction(ActionJump, ETriggerEvent::Started, this, &ARollingBallGamePlayerController::HandleJump);
 	}
+
+	if (ActionAim)
+	{
+		EnhancedInputComponent->BindAction(ActionAim, ETriggerEvent::Started, this, &ARollingBallGamePlayerController::StartAim);
+		EnhancedInputComponent->BindAction(ActionAim, ETriggerEvent::Completed, this, &ARollingBallGamePlayerController::EndAim);
+	}
 }
 
 void ARollingBallGamePlayerController::OnUnPossess()
@@ -73,3 +79,16 @@ void ARollingBallGamePlayerController::HandleJump(const FInputActionValue& Input
 {
 	RollingBall->Jump();
 }
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ARollingBallGamePlayerController::StartAim(const FInputActionValue& InputActionValue)
+{
+	RollingBall->StartAim();
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ARollingBallGamePlayerController::EndAim(const FInputActionValue& InputActionValue)
+{
+	RollingBall->EndAim();
+}
+

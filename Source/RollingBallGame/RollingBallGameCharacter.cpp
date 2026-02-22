@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Subsystems/TimeDilationSubsystem.h"
 
 ARollingBallGameCharacter::ARollingBallGameCharacter()
 {
@@ -35,7 +36,6 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		Mesh->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 	}
 
-	// create the camera boom
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	if (CameraBoom)
 	{
@@ -48,7 +48,6 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		CameraBoom->CameraRotationLagSpeed = 4.0f;
 	}
 
-	// create the orbiting camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	if (FollowCamera)
 	{
@@ -74,8 +73,6 @@ void ARollingBallGameCharacter::BeginPlay()
 void ARollingBallGameCharacter::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	dt = DeltaTime;
-
 	HandleGroundedJumpRecharge();
 }
 
@@ -86,8 +83,9 @@ void ARollingBallGameCharacter::Move(FVector2d Move) const
 		Move.Normalize();
 	}
 
-	const FVector3d Forward = FollowCamera->GetForwardVector() * -Move.X * TorqueForce * dt;
-	const FVector3d Right = FollowCamera->GetRightVector() * Move.Y * TorqueForce * dt;
+	const float DeltaTime = GetWorld()->GetDeltaSeconds();
+	const FVector3d Forward = FollowCamera->GetForwardVector() * -Move.X * TorqueForce * DeltaTime;
+	const FVector3d Right = FollowCamera->GetRightVector() * Move.Y * TorqueForce * DeltaTime;
 
 	Sphere->AddTorqueInDegrees(Forward + Right, NAME_None, true);
 }
@@ -118,6 +116,16 @@ void ARollingBallGameCharacter::Jump()
 	AdjustJumpCharges(-1, EJumpChargeAdjustReasons::Jumped);
 }
 
+void ARollingBallGameCharacter::StartAim() const
+{
+	GetWorld()->GetSubsystem<UTimeDilationSubsystem>()->RequestDilation("RollingBall", 0.4f);
+}
+
+void ARollingBallGameCharacter::EndAim() const
+{
+	GetWorld()->GetSubsystem<UTimeDilationSubsystem>()->ClearRequest("RollingBall");
+}
+
 void ARollingBallGameCharacter::HandleGroundedJumpRecharge()
 {
 	if (JumpCharges >= MaxJumpCharges)
@@ -125,7 +133,7 @@ void ARollingBallGameCharacter::HandleGroundedJumpRecharge()
 		return;
 	}
 
-	JumpRechargeTimer -= dt;
+	JumpRechargeTimer -= GetWorld()->GetDeltaSeconds();
 
 	if (JumpRechargeTimer > 0.0f)
 	{

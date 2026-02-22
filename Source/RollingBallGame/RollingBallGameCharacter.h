@@ -48,9 +48,11 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void Move(FVector2d X) const;
+	void Move(FVector2d Move) const;
 	void Look(const double X, const double Y);
 	void Jump();
+	void StartAim() const;
+	void EndAim() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -71,7 +73,6 @@ private:
 	void HandleGroundedJumpRecharge();
 	void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
 
-	float dt = 0;
 	float JumpRechargeTimer = 0;
 	int JumpCharges = 0;
 	bool IsGrounded = false;
