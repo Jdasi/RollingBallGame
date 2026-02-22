@@ -2,7 +2,9 @@
 
 #include "CustomWidget.h"
 
+#if WITH_EDITOR
 const FText UCustomWidget::GetPaletteCategory()
 {
     return NSLOCTEXT("UMG", "CustomPaletteCategory", "RollingBallGame");
 }
+#endif
