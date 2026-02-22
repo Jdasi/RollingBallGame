@@ -31,14 +31,9 @@ public:
 
 	ARollingBallGameCharacter();
 
-	virtual void Tick(float DeltaTime) override;
-
 	FORCEINLINE USphereComponent* GetSphere() const { return Sphere; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return FollowCamera; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-
-protected:
-	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))

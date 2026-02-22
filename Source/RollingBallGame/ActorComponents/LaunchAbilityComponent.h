@@ -9,12 +9,23 @@
 class UCameraComponent;
 class USpringArmComponent;
 
+UENUM(BlueprintType, meta=(Bitflags))
+enum ELaunchAbilityDisableReasons : uint8
+{
+    None = 0 UMETA(Hidden),
+    NearGeometry = 1 << 0,
+};
+ENUM_CLASS_FLAGS(ELaunchAbilityDisableReasons)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ROLLINGBALLGAME_API ULaunchAbilityComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float RequiredGeometryDistance = 200.0f;
+
     UPROPERTY(EditAnywhere, Category="Settings")
     float TimeDilation = 0.4f;
 
@@ -44,6 +55,9 @@ public:
 
     ULaunchAbilityComponent();
 
+    FORCEINLINE bool IsDisabled() const { return DisableReasons != ELaunchAbilityDisableReasons::None; }
+    bool HasDisabledFlag(ELaunchAbilityDisableReasons Reason) const;
+    void SetDisabledFlag(ELaunchAbilityDisableReasons Reason, bool Value);
     void StartAim();
     void EndAim();
 
@@ -58,13 +72,18 @@ private:
     UPROPERTY()
     USpringArmComponent* CameraBoom = nullptr;
 
-    void SetTimeDilationActive(bool Active) const;
+    void SetPrimed(bool Primed);
+    void TickGeometryCheck(float UnscaledDeltaTime);
+    void TickLerp(float UnscaledDeltaTime);
+    void PerformGeometryCheck();
 
     FVector InitialOffset = FVector::ZeroVector;
+    ELaunchAbilityDisableReasons DisableReasons = ELaunchAbilityDisableReasons::None;
     float InitialFov = 0.0f;
     float InitialCameraLag = 0.0f;
     float InitialCameraRotationLag = 0.0f;
+    float GeometryCheckTimer;
     float ExitTimer = 0.0f;
-    bool AimActive = false;
+    bool IsPrimed = false;
     bool AimRequested = false;
 };

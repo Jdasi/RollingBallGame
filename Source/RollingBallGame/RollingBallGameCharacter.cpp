@@ -65,13 +65,3 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 }
-
-void ARollingBallGameCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ARollingBallGameCharacter::Tick(const float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
