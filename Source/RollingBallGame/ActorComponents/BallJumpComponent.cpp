@@ -84,5 +84,5 @@ void UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAd
     const int PrevCharges = JumpCharges;
     JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
     JumpRechargeTimer = JumpRechargeRate;
-    JumpChargesChanged.Broadcast(PrevCharges, JumpCharges);
+    JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
 }

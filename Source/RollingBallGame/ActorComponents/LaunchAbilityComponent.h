@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "LaunchAbilityComponent.generated.h"
 
+enum EJumpChargeAdjustReasons : uint8;
 class UBallJumpComponent;
 class USphereComponent;
 class UCameraComponent;
@@ -109,5 +110,5 @@ private:
     void PerformGeometryCheck();
 
     UFUNCTION()
-    void OnJumpChargesChanged(int PrevValue, int NewValue);
+    void OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason);
 };

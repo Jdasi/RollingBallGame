@@ -215,7 +215,7 @@ void ULaunchAbilityComponent::PerformGeometryCheck()
     SetDisabledReason(ELaunchAbilityDisableReasons::NearGeometry, IsNearGeometry);
 }
 
-void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue)
+void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason)
 {
     SetDisabledReason(ELaunchAbilityDisableReasons::NoJumpCharges, NewValue == 0);
 }

@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "BallJumpComponent.generated.h"
 
-UENUM()
-enum EJumpChargeAdjustReasons
+UENUM(BlueprintType)
+enum EJumpChargeAdjustReasons : uint8
 {
     Jumped,
     Launched,
@@ -32,9 +32,10 @@ public:
     UPROPERTY(EditAnywhere, Category="Settings")
     float JumpForce = 1000.0f;
 
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRollingBallJumpChargesChanged,
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FRollingBallJumpChargesChanged,
         int32, OldValue,
-        int32, NewValue);
+        int32, NewValue,
+        EJumpChargeAdjustReasons, Reason);
     UPROPERTY(BlueprintReadOnly, Category="Events")
     FRollingBallJumpChargesChanged JumpChargesChanged;
 

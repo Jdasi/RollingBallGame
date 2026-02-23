@@ -31,7 +31,7 @@ void ARollingBallGameHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void ARollingBallGameHUD::OnRollingBallJumpChargesChanged(const int OldValue, const int NewValue)
+void ARollingBallGameHUD::OnRollingBallJumpChargesChanged(const int OldValue, const int NewValue, EJumpChargeAdjustReasons Reason)
 {
     GameViewWidget->JumpChargeGroup->RefreshJumpCharges(NewValue);
 }

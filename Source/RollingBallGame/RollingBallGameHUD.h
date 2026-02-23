@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "RollingBallGameHUD.generated.h"
 
+enum EJumpChargeAdjustReasons : uint8;
 class ARollingBallGameCharacter;
 class UGameViewWidget;
 
@@ -30,5 +31,5 @@ private:
     ARollingBallGameCharacter* RollingBall = nullptr;
 
     UFUNCTION()
-    void OnRollingBallJumpChargesChanged(int OldValue, int NewValue);
+    void OnRollingBallJumpChargesChanged(int OldValue, int NewValue, EJumpChargeAdjustReasons Reason);
 };
