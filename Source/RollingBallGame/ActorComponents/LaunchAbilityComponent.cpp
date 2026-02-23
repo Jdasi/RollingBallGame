@@ -172,6 +172,16 @@ void ULaunchAbilityComponent::TickLerp(const float UnscaledDeltaTime)
     }
 }
 
+void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason)
+{
+    SetDisabledReason(ELaunchAbilityDisableReasons::NoJumpCharges, NewValue == 0);
+
+    if (NewValue > PrevValue)
+    {
+        ClearLaunchCooldown();
+    }
+}
+
 void ULaunchAbilityComponent::SetRunning(bool Running)
 {
     if (IsRunning == Running)
@@ -215,15 +225,4 @@ void ULaunchAbilityComponent::PerformGeometryCheck()
         Params);
 
     SetDisabledReason(ELaunchAbilityDisableReasons::NearGeometry, IsNearGeometry);
-}
-
-void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason)
-{
-    SetDisabledReason(ELaunchAbilityDisableReasons::NoJumpCharges, NewValue == 0);
-
-    if (NewValue > PrevValue
-        && Reason == EJumpChargeAdjustReasons::MaxChargesChanged)
-    {
-        ClearLaunchCooldown();
-    }
 }

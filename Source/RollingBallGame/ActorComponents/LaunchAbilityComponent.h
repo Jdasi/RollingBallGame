@@ -104,11 +104,11 @@ private:
     bool IsRunning = false;
     bool AimRequested = false;
 
+    UFUNCTION()
+    void OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason);
+
     void SetRunning(bool Running);
     void TickGeometryCheck(float UnscaledDeltaTime);
     void TickLerp(float UnscaledDeltaTime);
     void PerformGeometryCheck();
-
-    UFUNCTION()
-    void OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason);
 };

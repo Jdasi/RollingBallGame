@@ -9,6 +9,7 @@
 UENUM(BlueprintType)
 enum EJumpChargeAdjustReasons : uint8
 {
+    Generic,
     BeginPlay,
     Jumped,
     Launched,
@@ -50,10 +51,10 @@ public:
     FORCEINLINE bool HasJumpCharges() const { return JumpCharges > 0; }
 
     UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
-    void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
+    bool AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
 
     UFUNCTION(BlueprintCallable, Category = "Components|RollingBall", Meta=(Tooltip = "Min 0; Max 3."))
-    void AdjustMaxJumpCharges(int Amount);
+    bool AdjustMaxJumpCharges(int Amount);
 
     UBallJumpComponent();
 

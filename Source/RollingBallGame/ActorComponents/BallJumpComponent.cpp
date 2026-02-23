@@ -80,26 +80,30 @@ void UBallJumpComponent::HandleGroundedJumpRecharge()
     AdjustJumpCharges(1, EJumpChargeAdjustReasons::GroundedRecharge);
 }
 
-void UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAdjustReasons Reason)
+bool UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAdjustReasons Reason)
 {
     const int PrevCharges = JumpCharges;
     JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
 
-    if (JumpCharges != PrevCharges)
+    if (JumpCharges == PrevCharges)
     {
-        JumpRechargeTimer = JumpRechargeRate;
-        JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
+        return false;
     }
+
+    JumpRechargeTimer = JumpRechargeRate;
+    JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
+
+    return true;
 }
 
-void UBallJumpComponent::AdjustMaxJumpCharges(int Amount)
+bool UBallJumpComponent::AdjustMaxJumpCharges(int Amount)
 {
     const int PrevMaxJumpCharges = MaxJumpCharges;
     MaxJumpCharges = FMath::Clamp(MaxJumpCharges + Amount, 0, MAX_JUMP_CHARGES);
 
     if (MaxJumpCharges == PrevMaxJumpCharges)
     {
-        return;
+        return false;
     }
 
     const int Diff = MaxJumpCharges - PrevMaxJumpCharges;
@@ -109,4 +113,6 @@ void UBallJumpComponent::AdjustMaxJumpCharges(int Amount)
     {
         ClearJumpCooldown();
     }
+
+    return true;
 }

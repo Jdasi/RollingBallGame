@@ -20,13 +20,13 @@ class ROLLINGBALLGAME_API ARollingBallGameCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UBallMoveComponent* MoveComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UBallJumpComponent* JumpComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	ULaunchAbilityComponent* LaunchAbilityComponent = nullptr;
 
 	ARollingBallGameCharacter();
