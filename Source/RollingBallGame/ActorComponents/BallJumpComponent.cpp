@@ -9,21 +9,14 @@ UBallJumpComponent::UBallJumpComponent()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UBallJumpComponent::BeginPlay()
-{
-    Super::BeginPlay();
-    JumpCharges = MaxJumpCharges;
-}
-
-void UBallJumpComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-    HandleGroundedJumpRecharge();
-}
-
 void UBallJumpComponent::Jump()
 {
     if (JumpCharges <= 0)
+    {
+        return;
+    }
+
+    if (JumpCooldownHandle.IsValid())
     {
         return;
     }
@@ -40,6 +33,33 @@ void UBallJumpComponent::Jump()
 
     Sphere->AddImpulse(Impulse, NAME_None, true);
     AdjustJumpCharges(-1, EJumpChargeAdjustReasons::Jumped);
+
+    FTimerDelegate Delegate;
+    Delegate.BindUObject(this, &UBallJumpComponent::ClearJumpCooldown);
+    GetWorld()->GetTimerManager().SetTimer(JumpCooldownHandle, Delegate, JumpCooldown, false);
+}
+
+void UBallJumpComponent::ClearJumpCooldown()
+{
+    GetWorld()->GetTimerManager().ClearTimer(JumpCooldownHandle);
+}
+
+void UBallJumpComponent::BeginPlay()
+{
+    Super::BeginPlay();
+    JumpCharges = MaxJumpCharges;
+}
+
+void UBallJumpComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+    ClearJumpCooldown();
+}
+
+void UBallJumpComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    HandleGroundedJumpRecharge();
 }
 
 void UBallJumpComponent::HandleGroundedJumpRecharge()
@@ -63,6 +83,6 @@ void UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAd
 {
     const int PrevCharges = JumpCharges;
     JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
-    JumpRechargeTimer = JumpRecoverDelay;
+    JumpRechargeTimer = JumpRechargeRate;
     JumpChargesChanged.ExecuteIfBound(PrevCharges, JumpCharges);
 }

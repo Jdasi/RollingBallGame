@@ -20,7 +20,10 @@ class ROLLINGBALLGAME_API UBallJumpComponent : public UActorComponent
 
 public:
     UPROPERTY(EditAnywhere, Category="Settings")
-    float JumpRecoverDelay = 3.0f;
+    float JumpCooldown = 0.5f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float JumpRechargeRate = 3.0f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     int MaxJumpCharges = 3;
@@ -43,12 +46,15 @@ public:
     UBallJumpComponent();
 
     void Jump();
+    void ClearJumpCooldown();
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+    FTimerHandle JumpCooldownHandle;
     float JumpRechargeTimer = 0;
     int JumpCharges = 0;
     bool IsGrounded = false;
