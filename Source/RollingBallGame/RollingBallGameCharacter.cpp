@@ -73,7 +73,7 @@ void ARollingBallGameCharacter::HandleMoveAction(const FVector2d& Move) const
 
 void ARollingBallGameCharacter::HandleJumpAction() const
 {
-	if (LaunchAbilityComponent->ShouldConsumeJump())
+	if (LaunchAbilityComponent->ShouldConsumeJumpAction())
 	{
 		LaunchAbilityComponent->Launch();
 	}

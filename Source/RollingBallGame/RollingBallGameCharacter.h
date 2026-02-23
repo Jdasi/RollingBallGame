@@ -34,6 +34,7 @@ public:
 	FORCEINLINE USphereComponent* GetSphere() const { return Sphere; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return FollowCamera; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
 
 	void HandleMoveAction(const FVector2d& Move) const;
 	void HandleJumpAction() const;

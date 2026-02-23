@@ -16,9 +16,7 @@ UENUM(BlueprintType, meta=(Bitflags))
 enum ELaunchAbilityDisableReasons : uint8
 {
     None = 0 UMETA(Hidden),
-    NearGeometry = 1 << 0,
-    RecentLaunch = 1 << 1,
-    NoJumpCharges = 1 << 2,
+    NoCharge = 1 << 0,
 };
 ENUM_CLASS_FLAGS(ELaunchAbilityDisableReasons)
 
@@ -35,13 +33,13 @@ public:
     float LaunchCooldown = 5.0f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
-    float RequiredGeometryDistance = 200.0f;
-
-    UPROPERTY(EditAnywhere, Category="Settings")
     float TimeDilation = 0.4f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     float ExitAimDelay = 0.5f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
+    bool StartWithCharge = false;
 
     UPROPERTY(EditAnywhere, Category="Lerp Targets")
     FVector OffsetLerpTarget = FVector::ZeroVector;
@@ -72,13 +70,11 @@ public:
     ULaunchAbilityComponent();
 
     FORCEINLINE bool IsDisabled() const { return DisableReasons != ELaunchAbilityDisableReasons::None; }
-    FORCEINLINE bool ShouldConsumeJump() const { return IsRunning; }
-    bool HasDisabledFlag(ELaunchAbilityDisableReasons Reason) const;
-    void SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value);
+    FORCEINLINE bool ShouldConsumeJumpAction() const { return IsRunning; }
     void StartAim();
     void EndAim();
     void Launch();
-    void ClearLaunchCooldown();
+    void Recharge();
 
 protected:
     virtual void BeginPlay() override;
@@ -95,25 +91,17 @@ private:
     UPROPERTY()
     USphereComponent* Sphere = nullptr;
 
-    UPROPERTY()
-    UBallJumpComponent* JumpComponent = nullptr;
-
     FVector InitialOffset = FVector::ZeroVector;
     ELaunchAbilityDisableReasons DisableReasons = ELaunchAbilityDisableReasons::None;
-    FTimerHandle LaunchCooldownHandle;
     float InitialFov = 0.0f;
     float InitialCameraLag = 0.0f;
     float InitialCameraRotationLag = 0.0f;
-    float GeometryCheckTimer;
     float ExitTimer = 0.0f;
     bool IsRunning = false;
     bool AimRequested = false;
 
-    UFUNCTION()
-    void OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason);
-
     void SetRunning(bool Running);
-    void TickGeometryCheck(float UnscaledDeltaTime);
     void TickLerp(float UnscaledDeltaTime);
-    void PerformGeometryCheck();
+    bool HasDisabledReason(ELaunchAbilityDisableReasons Reason) const;
+    void SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value);
 };

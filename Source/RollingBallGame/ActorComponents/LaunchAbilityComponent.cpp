@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "LaunchAbilityComponent.h"
-#include "BallJumpComponent.h"
 #include "RollingBallGameCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
@@ -13,14 +12,14 @@ ULaunchAbilityComponent::ULaunchAbilityComponent()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
-bool ULaunchAbilityComponent::HasDisabledFlag(ELaunchAbilityDisableReasons Reason) const
+bool ULaunchAbilityComponent::HasDisabledReason(ELaunchAbilityDisableReasons Reason) const
 {
     return EnumHasAnyFlags(DisableReasons, Reason);
 }
 
 void ULaunchAbilityComponent::SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value)
 {
-    if (HasDisabledFlag(Reason) == Value)
+    if (HasDisabledReason(Reason) == Value)
     {
         return;
     }
@@ -80,18 +79,16 @@ void ULaunchAbilityComponent::Launch()
     const FVector DirCombined = DirUp + DirRight + DirForward;
 
     Sphere->SetPhysicsLinearVelocity(DirCombined * LaunchForce);
-    JumpComponent->AdjustJumpCharges(-1, EJumpChargeAdjustReasons::Launched);
-    SetDisabledReason(ELaunchAbilityDisableReasons::RecentLaunch, true);
+    // TODO - uncomment once recharge powerups are implemented
+    //SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
 
     FTimerDelegate Delegate;
-    Delegate.BindUObject(this, &ULaunchAbilityComponent::ClearLaunchCooldown);
-    GetWorld()->GetTimerManager().SetTimer(LaunchCooldownHandle, Delegate, LaunchCooldown, false);
+    Delegate.BindUObject(this, &ULaunchAbilityComponent::Recharge);
 }
 
-void ULaunchAbilityComponent::ClearLaunchCooldown()
+void ULaunchAbilityComponent::Recharge()
 {
-    GetWorld()->GetTimerManager().ClearTimer(LaunchCooldownHandle);
-    SetDisabledReason(ELaunchAbilityDisableReasons::RecentLaunch, false);
+    SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, false);
 }
 
 void ULaunchAbilityComponent::BeginPlay()
@@ -102,22 +99,22 @@ void ULaunchAbilityComponent::BeginPlay()
     Camera = RollingBall->GetCamera();
     CameraBoom = RollingBall->GetCameraBoom();
     Sphere = RollingBall->GetSphere();
-    JumpComponent = RollingBall->JumpComponent;
-    JumpComponent->JumpChargesChanged.AddDynamic(this, &ULaunchAbilityComponent::OnJumpChargesChanged);
 
     InitialOffset = CameraBoom->SocketOffset;
     InitialFov = Camera->FieldOfView;
     InitialCameraLag = CameraBoom->CameraLagSpeed;
     InitialCameraRotationLag = CameraBoom->CameraRotationLagSpeed;
 
-    OnJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::BeginPlay);
+    if (!StartWithCharge)
+    {
+        // TODO - uncomment once recharge powerups are implemented
+        //SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
+    }
 }
 
 void ULaunchAbilityComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     Super::EndPlay(EndPlayReason);
-    JumpComponent->JumpChargesChanged.RemoveDynamic(this, &ULaunchAbilityComponent::OnJumpChargesChanged);
-    ClearLaunchCooldown();
 }
 
 void ULaunchAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -125,21 +122,7 @@ void ULaunchAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
     const float UnscaledDeltaTime = FApp::GetDeltaTime();
-    TickGeometryCheck(UnscaledDeltaTime);
     TickLerp(UnscaledDeltaTime);
-}
-
-void ULaunchAbilityComponent::TickGeometryCheck(const float UnscaledDeltaTime)
-{
-    GeometryCheckTimer -= UnscaledDeltaTime;
-
-    if (GeometryCheckTimer > 0)
-    {
-        return;
-    }
-
-    GeometryCheckTimer = 0.1f;
-    PerformGeometryCheck();
 }
 
 void ULaunchAbilityComponent::TickLerp(const float UnscaledDeltaTime)
@@ -177,16 +160,6 @@ void ULaunchAbilityComponent::TickLerp(const float UnscaledDeltaTime)
     }
 }
 
-void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason)
-{
-    SetDisabledReason(ELaunchAbilityDisableReasons::NoJumpCharges, NewValue == 0);
-
-    if (NewValue > PrevValue)
-    {
-        ClearLaunchCooldown();
-    }
-}
-
 void ULaunchAbilityComponent::SetRunning(bool Running)
 {
     if (IsRunning == Running)
@@ -206,27 +179,4 @@ void ULaunchAbilityComponent::SetRunning(bool Running)
     {
         GetWorld()->GetSubsystem<UTimeDilationSubsystem>()->ClearRequest(RequesterId);
     }
-}
-
-void ULaunchAbilityComponent::PerformGeometryCheck()
-{
-    FCollisionObjectQueryParams ObjectParams;
-    ObjectParams.AddObjectTypesToQuery(ECC_GameTraceChannel1);
-
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(GetOwner());
-
-    const FVector ActorLocation = GetOwner()->GetActorLocation();
-    FHitResult Hit;
-
-    const bool IsNearGeometry = GetWorld()->SweepSingleByObjectType(
-        Hit,
-        ActorLocation,
-        ActorLocation,
-        FQuat::Identity,
-        ObjectParams,
-        FCollisionShape::MakeSphere(RequiredGeometryDistance),
-        Params);
-
-    SetDisabledReason(ELaunchAbilityDisableReasons::NearGeometry, IsNearGeometry);
 }
