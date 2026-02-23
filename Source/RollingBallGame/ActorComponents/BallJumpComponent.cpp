@@ -47,7 +47,8 @@ void UBallJumpComponent::ClearJumpCooldown()
 void UBallJumpComponent::BeginPlay()
 {
     Super::BeginPlay();
-    JumpCharges = MaxJumpCharges;
+    MaxJumpCharges = FMath::Clamp(MaxJumpCharges, 0, MAX_JUMP_CHARGES);
+    AdjustJumpCharges(MaxJumpCharges, EJumpChargeAdjustReasons::BeginPlay);
 }
 
 void UBallJumpComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -83,6 +84,10 @@ void UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAd
 {
     const int PrevCharges = JumpCharges;
     JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
-    JumpRechargeTimer = JumpRechargeRate;
-    JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
+
+    if (JumpCharges != PrevCharges)
+    {
+        JumpRechargeTimer = JumpRechargeRate;
+        JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
+    }
 }

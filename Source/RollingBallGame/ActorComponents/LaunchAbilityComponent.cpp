@@ -104,6 +104,8 @@ void ULaunchAbilityComponent::BeginPlay()
     InitialFov = Camera->FieldOfView;
     InitialCameraLag = CameraBoom->CameraLagSpeed;
     InitialCameraRotationLag = CameraBoom->CameraRotationLagSpeed;
+
+    OnJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::BeginPlay);
 }
 
 void ULaunchAbilityComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

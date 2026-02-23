@@ -17,6 +17,7 @@ void ARollingBallGameHUD::BeginPlay()
     {
         RollingBall = Cast<ARollingBallGameCharacter>(RollingBallController->GetPawn());
         RollingBall->JumpComponent->JumpChargesChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
+        OnRollingBallJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::BeginPlay);
     }
 }
 
