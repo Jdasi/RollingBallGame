@@ -91,3 +91,22 @@ void UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAd
         JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
     }
 }
+
+void UBallJumpComponent::AdjustMaxJumpCharges(int Amount)
+{
+    const int PrevMaxJumpCharges = MaxJumpCharges;
+    MaxJumpCharges = FMath::Clamp(MaxJumpCharges + Amount, 0, MAX_JUMP_CHARGES);
+
+    if (MaxJumpCharges == PrevMaxJumpCharges)
+    {
+        return;
+    }
+
+    const int Diff = MaxJumpCharges - PrevMaxJumpCharges;
+    AdjustJumpCharges(Diff, EJumpChargeAdjustReasons::MaxChargesChanged);
+
+    if (MaxJumpCharges > PrevMaxJumpCharges)
+    {
+        ClearJumpCooldown();
+    }
+}

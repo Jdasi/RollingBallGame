@@ -220,4 +220,10 @@ void ULaunchAbilityComponent::PerformGeometryCheck()
 void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue, EJumpChargeAdjustReasons Reason)
 {
     SetDisabledReason(ELaunchAbilityDisableReasons::NoJumpCharges, NewValue == 0);
+
+    if (NewValue > PrevValue
+        && Reason == EJumpChargeAdjustReasons::MaxChargesChanged)
+    {
+        ClearLaunchCooldown();
+    }
 }

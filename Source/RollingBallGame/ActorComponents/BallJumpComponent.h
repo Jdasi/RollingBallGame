@@ -13,6 +13,7 @@ enum EJumpChargeAdjustReasons : uint8
     Jumped,
     Launched,
     GroundedRecharge,
+    MaxChargesChanged,
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -50,6 +51,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
     void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
+
+    UFUNCTION(BlueprintCallable, Category = "Components|RollingBall", Meta=(Tooltip = "Min 0; Max 3."))
+    void AdjustMaxJumpCharges(int Amount);
 
     UBallJumpComponent();
 
