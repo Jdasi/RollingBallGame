@@ -16,7 +16,7 @@ void ARollingBallGameHUD::BeginPlay()
     if (const APlayerController* RollingBallController = GetOwningPlayerController())
     {
         RollingBall = Cast<ARollingBallGameCharacter>(RollingBallController->GetPawn());
-        RollingBall->JumpComponent->JumpChargesChanged.BindDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
+        RollingBall->JumpComponent->JumpChargesChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
     }
 }
 
@@ -26,7 +26,7 @@ void ARollingBallGameHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     if (RollingBall)
     {
-        RollingBall->JumpComponent->JumpChargesChanged.Unbind();
+        RollingBall->JumpComponent->JumpChargesChanged.RemoveDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
     }
 }
 

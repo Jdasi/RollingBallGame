@@ -1,6 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "LaunchAbilityComponent.h"
+#include "BallJumpComponent.h"
 #include "RollingBallGameCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
@@ -73,6 +74,7 @@ void ULaunchAbilityComponent::EndAim()
 
 void ULaunchAbilityComponent::Launch()
 {
+    JumpComponent->AdjustJumpCharges(-1, EJumpChargeAdjustReasons::Launched);
     Sphere->SetPhysicsLinearVelocity(Camera->GetForwardVector() * LaunchForce);
     SetDisabledReason(ELaunchAbilityDisableReasons::RecentLaunch, true);
 
@@ -95,6 +97,8 @@ void ULaunchAbilityComponent::BeginPlay()
     Camera = RollingBall->GetCamera();
     CameraBoom = RollingBall->GetCameraBoom();
     Sphere = RollingBall->GetSphere();
+    JumpComponent = RollingBall->JumpComponent;
+    JumpComponent->JumpChargesChanged.AddDynamic(this, &ULaunchAbilityComponent::OnJumpChargesChanged);
 
     InitialOffset = CameraBoom->SocketOffset;
     InitialFov = Camera->FieldOfView;
@@ -105,6 +109,7 @@ void ULaunchAbilityComponent::BeginPlay()
 void ULaunchAbilityComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     Super::EndPlay(EndPlayReason);
+    JumpComponent->JumpChargesChanged.RemoveDynamic(this, &ULaunchAbilityComponent::OnJumpChargesChanged);
     ClearLaunchCooldown();
 }
 
@@ -208,4 +213,9 @@ void ULaunchAbilityComponent::PerformGeometryCheck()
         Params);
 
     SetDisabledReason(ELaunchAbilityDisableReasons::NearGeometry, IsNearGeometry);
+}
+
+void ULaunchAbilityComponent::OnJumpChargesChanged(int PrevValue, int NewValue)
+{
+    SetDisabledReason(ELaunchAbilityDisableReasons::NoJumpCharges, NewValue == 0);
 }

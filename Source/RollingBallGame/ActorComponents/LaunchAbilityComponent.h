@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "LaunchAbilityComponent.generated.h"
 
+class UBallJumpComponent;
 class USphereComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -16,6 +17,7 @@ enum ELaunchAbilityDisableReasons : uint8
     None = 0 UMETA(Hidden),
     NearGeometry = 1 << 0,
     RecentLaunch = 1 << 1,
+    NoJumpCharges = 1 << 2,
 };
 ENUM_CLASS_FLAGS(ELaunchAbilityDisableReasons)
 
@@ -87,6 +89,9 @@ private:
     UPROPERTY()
     USphereComponent* Sphere = nullptr;
 
+    UPROPERTY()
+    UBallJumpComponent* JumpComponent = nullptr;
+
     FVector InitialOffset = FVector::ZeroVector;
     ELaunchAbilityDisableReasons DisableReasons = ELaunchAbilityDisableReasons::None;
     FTimerHandle LaunchCooldownHandle;
@@ -102,4 +107,7 @@ private:
     void TickGeometryCheck(float UnscaledDeltaTime);
     void TickLerp(float UnscaledDeltaTime);
     void PerformGeometryCheck();
+
+    UFUNCTION()
+    void OnJumpChargesChanged(int PrevValue, int NewValue);
 };

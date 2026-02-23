@@ -10,6 +10,7 @@ UENUM()
 enum EJumpChargeAdjustReasons
 {
     Jumped,
+    Launched,
     GroundedRecharge,
 };
 
@@ -31,7 +32,7 @@ public:
     UPROPERTY(EditAnywhere, Category="Settings")
     float JumpForce = 1000.0f;
 
-    DECLARE_DYNAMIC_DELEGATE_TwoParams(FRollingBallJumpChargesChanged,
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRollingBallJumpChargesChanged,
         int32, OldValue,
         int32, NewValue);
     UPROPERTY(BlueprintReadOnly, Category="Events")
