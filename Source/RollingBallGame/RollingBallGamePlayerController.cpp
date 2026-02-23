@@ -4,9 +4,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "RollingBallGameCharacter.h"
-#include "ActorComponents/BallJumpComponent.h"
-#include "ActorComponents/BallMoveComponent.h"
-#include "ActorComponents/LaunchAbilityComponent.h"
 #include "Engine/LocalPlayer.h"
 
 void ARollingBallGamePlayerController::BeginPlay()
@@ -62,7 +59,7 @@ void ARollingBallGamePlayerController::OnUnPossess()
 void ARollingBallGamePlayerController::HandleMove(const FInputActionValue& InputActionValue)
 {
 	const FVector2d MovementVector = InputActionValue.Get<FVector2D>();
-	RollingBall->MoveComponent->Move(MovementVector);
+	RollingBall->HandleMoveAction(MovementVector);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -81,18 +78,18 @@ void ARollingBallGamePlayerController::HandleMouseLook(const FInputActionValue& 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::HandleJump(const FInputActionValue& InputActionValue)
 {
-	RollingBall->JumpComponent->Jump();
+	RollingBall->HandleJumpAction();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::StartAim(const FInputActionValue& InputActionValue)
 {
-	RollingBall->LaunchAbilityComponent->StartAim();
+	RollingBall->HandleAimStartAction();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::EndAim(const FInputActionValue& InputActionValue)
 {
-	RollingBall->LaunchAbilityComponent->EndAim();
+	RollingBall->HandleAimEndAction();
 }
 

@@ -3,6 +3,7 @@
 #include "LaunchAbilityComponent.h"
 #include "RollingBallGameCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Subsystems/TimeDilationSubsystem.h"
 
@@ -16,7 +17,7 @@ bool ULaunchAbilityComponent::HasDisabledFlag(ELaunchAbilityDisableReasons Reaso
     return EnumHasAnyFlags(DisableReasons, Reason);
 }
 
-void ULaunchAbilityComponent::SetDisabledFlag(ELaunchAbilityDisableReasons Reason, bool Value)
+void ULaunchAbilityComponent::SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value)
 {
     if (HasDisabledFlag(Reason) == Value)
     {
@@ -43,7 +44,7 @@ void ULaunchAbilityComponent::SetDisabledFlag(ELaunchAbilityDisableReasons Reaso
 
     if (CurrDisabled)
     {
-        SetPrimed(false);
+        SetRunning(false);
     }
     else
     {
@@ -58,9 +59,9 @@ void ULaunchAbilityComponent::StartAim()
 {
     AimRequested = true;
 
-    if (!IsDisabled() && AimRequested && !IsPrimed)
+    if (AimRequested && !IsDisabled())
     {
-        SetPrimed(true);
+        SetRunning(true);
     }
 }
 
@@ -70,6 +71,22 @@ void ULaunchAbilityComponent::EndAim()
     ExitTimer = ExitAimDelay;
 }
 
+void ULaunchAbilityComponent::Launch()
+{
+    Sphere->SetPhysicsLinearVelocity(Camera->GetForwardVector() * LaunchForce);
+    SetDisabledReason(ELaunchAbilityDisableReasons::RecentLaunch, true);
+
+    FTimerDelegate Delegate;
+    Delegate.BindUObject(this, &ULaunchAbilityComponent::ClearLaunchCooldown);
+    GetWorld()->GetTimerManager().SetTimer(LaunchCooldownHandle, Delegate, LaunchCooldown, false);
+}
+
+void ULaunchAbilityComponent::ClearLaunchCooldown()
+{
+    GetWorld()->GetTimerManager().ClearTimer(LaunchCooldownHandle);
+    SetDisabledReason(ELaunchAbilityDisableReasons::RecentLaunch, false);
+}
+
 void ULaunchAbilityComponent::BeginPlay()
 {
     Super::BeginPlay();
@@ -77,11 +94,18 @@ void ULaunchAbilityComponent::BeginPlay()
     const ARollingBallGameCharacter* RollingBall = Cast<ARollingBallGameCharacter>(GetOwner());
     Camera = RollingBall->GetCamera();
     CameraBoom = RollingBall->GetCameraBoom();
+    Sphere = RollingBall->GetSphere();
 
     InitialOffset = CameraBoom->SocketOffset;
     InitialFov = Camera->FieldOfView;
     InitialCameraLag = CameraBoom->CameraLagSpeed;
     InitialCameraRotationLag = CameraBoom->CameraRotationLagSpeed;
+}
+
+void ULaunchAbilityComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+    ClearLaunchCooldown();
 }
 
 void ULaunchAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -117,7 +141,7 @@ void ULaunchAbilityComponent::TickLerp(const float UnscaledDeltaTime)
     }
     else
     {
-        if (IsPrimed)
+        if (IsRunning)
         {
             if (ExitTimer > 0)
             {
@@ -125,7 +149,7 @@ void ULaunchAbilityComponent::TickLerp(const float UnscaledDeltaTime)
 
                 if (ExitTimer <= 0.0f)
                 {
-                    SetPrimed(false);
+                    SetRunning(false);
                 }
                 else
                 {
@@ -141,19 +165,19 @@ void ULaunchAbilityComponent::TickLerp(const float UnscaledDeltaTime)
     }
 }
 
-void ULaunchAbilityComponent::SetPrimed(bool Primed)
+void ULaunchAbilityComponent::SetRunning(bool Running)
 {
-    if (IsPrimed == Primed)
+    if (IsRunning == Running)
     {
         return;
     }
 
-    IsPrimed = Primed;
+    IsRunning = Running;
     const FName RequesterId = FName("RollingBall");
 
     // TODO - notify (UI / audio)
 
-    if (Primed)
+    if (Running)
     {
         GetWorld()->GetSubsystem<UTimeDilationSubsystem>()->RequestDilation(RequesterId, TimeDilation);
     }
@@ -183,5 +207,5 @@ void ULaunchAbilityComponent::PerformGeometryCheck()
         FCollisionShape::MakeSphere(RequiredGeometryDistance),
         Params);
 
-    SetDisabledFlag(ELaunchAbilityDisableReasons::NearGeometry, IsNearGeometry);
+    SetDisabledReason(ELaunchAbilityDisableReasons::NearGeometry, IsNearGeometry);
 }

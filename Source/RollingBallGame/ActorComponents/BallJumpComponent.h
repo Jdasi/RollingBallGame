@@ -34,6 +34,12 @@ public:
     UPROPERTY(BlueprintReadOnly, Category="Events")
     FRollingBallJumpChargesChanged JumpChargesChanged;
 
+    UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
+    FORCEINLINE bool HasJumpCharges() const { return JumpCharges > 0; }
+
+    UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
+    void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
+
     UBallJumpComponent();
 
     void Jump();
@@ -42,13 +48,11 @@ protected:
     virtual void BeginPlay() override;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Components|JumpingBall")
-    void AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
-
 private:
-    void HandleGroundedJumpRecharge();
-
     float JumpRechargeTimer = 0;
     int JumpCharges = 0;
     bool IsGrounded = false;
+
+    void HandleGroundedJumpRecharge();
+
 };

@@ -35,6 +35,11 @@ public:
 	FORCEINLINE UCameraComponent* GetCamera() const { return FollowCamera; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	void HandleMoveAction(const FVector2d& Move) const;
+	void HandleJumpAction() const;
+	void HandleAimStartAction() const;
+	void HandleAimEndAction() const;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))
 	USphereComponent* Sphere = nullptr;

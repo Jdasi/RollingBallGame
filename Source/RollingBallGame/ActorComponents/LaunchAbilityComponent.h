@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "LaunchAbilityComponent.generated.h"
 
+class USphereComponent;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -14,6 +15,7 @@ enum ELaunchAbilityDisableReasons : uint8
 {
     None = 0 UMETA(Hidden),
     NearGeometry = 1 << 0,
+    RecentLaunch = 1 << 1,
 };
 ENUM_CLASS_FLAGS(ELaunchAbilityDisableReasons)
 
@@ -23,6 +25,12 @@ class ROLLINGBALLGAME_API ULaunchAbilityComponent : public UActorComponent
     GENERATED_BODY()
 
 public:
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float LaunchForce = 3000.0f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float LaunchCooldown = 5.0f;
+
     UPROPERTY(EditAnywhere, Category="Settings")
     float RequiredGeometryDistance = 200.0f;
 
@@ -56,13 +64,17 @@ public:
     ULaunchAbilityComponent();
 
     FORCEINLINE bool IsDisabled() const { return DisableReasons != ELaunchAbilityDisableReasons::None; }
+    FORCEINLINE bool ShouldConsumeJump() const { return IsRunning; }
     bool HasDisabledFlag(ELaunchAbilityDisableReasons Reason) const;
-    void SetDisabledFlag(ELaunchAbilityDisableReasons Reason, bool Value);
+    void SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value);
     void StartAim();
     void EndAim();
+    void Launch();
+    void ClearLaunchCooldown();
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
@@ -72,18 +84,22 @@ private:
     UPROPERTY()
     USpringArmComponent* CameraBoom = nullptr;
 
-    void SetPrimed(bool Primed);
-    void TickGeometryCheck(float UnscaledDeltaTime);
-    void TickLerp(float UnscaledDeltaTime);
-    void PerformGeometryCheck();
+    UPROPERTY()
+    USphereComponent* Sphere = nullptr;
 
     FVector InitialOffset = FVector::ZeroVector;
     ELaunchAbilityDisableReasons DisableReasons = ELaunchAbilityDisableReasons::None;
+    FTimerHandle LaunchCooldownHandle;
     float InitialFov = 0.0f;
     float InitialCameraLag = 0.0f;
     float InitialCameraRotationLag = 0.0f;
     float GeometryCheckTimer;
     float ExitTimer = 0.0f;
-    bool IsPrimed = false;
+    bool IsRunning = false;
     bool AimRequested = false;
+
+    void SetRunning(bool Running);
+    void TickGeometryCheck(float UnscaledDeltaTime);
+    void TickLerp(float UnscaledDeltaTime);
+    void PerformGeometryCheck();
 };

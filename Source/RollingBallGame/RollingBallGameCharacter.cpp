@@ -65,3 +65,30 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 }
+
+void ARollingBallGameCharacter::HandleMoveAction(const FVector2d& Move) const
+{
+	MoveComponent->Move(Move);
+}
+
+void ARollingBallGameCharacter::HandleJumpAction() const
+{
+	if (LaunchAbilityComponent->ShouldConsumeJump())
+	{
+		LaunchAbilityComponent->Launch();
+	}
+	else
+	{
+		JumpComponent->Jump();
+	}
+}
+
+void ARollingBallGameCharacter::HandleAimStartAction() const
+{
+	LaunchAbilityComponent->StartAim();
+}
+
+void ARollingBallGameCharacter::HandleAimEndAction() const
+{
+	LaunchAbilityComponent->EndAim();
+}
