@@ -6,6 +6,7 @@
 #include "CustomWidget.h"
 #include "GameViewWidget.generated.h"
 
+class ULaunchReticleWidget;
 class UJumpChargeGroupWidget;
 
 UCLASS(Abstract)
@@ -17,6 +18,7 @@ public:
     UPROPERTY(BlueprintReadOnly, Category="Constituent Controls", meta=(BindWidget))
     UJumpChargeGroupWidget* JumpChargeGroup = nullptr;
 
-    // TODO - crosshair
+    UPROPERTY(BlueprintReadOnly, Category="Constituent Controls", meta=(BindWidget))
+    ULaunchReticleWidget* LaunchReticle = nullptr;
 
 };

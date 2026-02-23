@@ -8,7 +8,7 @@
 
 class UImage;
 
-UCLASS()
+UCLASS(Abstract)
 class ROLLINGBALLGAME_API UJumpChargeWidget : public UCustomWidget
 {
     GENERATED_BODY()

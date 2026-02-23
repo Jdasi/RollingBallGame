@@ -64,6 +64,11 @@ public:
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
     float CameraRotationLagLerpSpeed = 10.0f;
 
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRollingBallAimStateChanged,
+        bool, Started);
+    UPROPERTY(BlueprintReadOnly, Category="Events")
+    FRollingBallAimStateChanged AimStateChanged;
+
     ULaunchAbilityComponent();
 
     FORCEINLINE bool IsDisabled() const { return DisableReasons != ELaunchAbilityDisableReasons::None; }

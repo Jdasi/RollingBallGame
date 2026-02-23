@@ -74,8 +74,13 @@ void ULaunchAbilityComponent::EndAim()
 
 void ULaunchAbilityComponent::Launch()
 {
+    const FVector DirUp = FVector::UpVector * 0.15f;
+    const FVector DirRight = Camera->GetRightVector() * 0.05f;
+    const FVector DirForward = Camera->GetForwardVector();
+    const FVector DirCombined = DirUp + DirRight + DirForward;
+
+    Sphere->SetPhysicsLinearVelocity(DirCombined * LaunchForce);
     JumpComponent->AdjustJumpCharges(-1, EJumpChargeAdjustReasons::Launched);
-    Sphere->SetPhysicsLinearVelocity(Camera->GetForwardVector() * LaunchForce);
     SetDisabledReason(ELaunchAbilityDisableReasons::RecentLaunch, true);
 
     FTimerDelegate Delegate;
@@ -190,9 +195,8 @@ void ULaunchAbilityComponent::SetRunning(bool Running)
     }
 
     IsRunning = Running;
+    AimStateChanged.Broadcast(Running);
     const FName RequesterId = FName("RollingBall");
-
-    // TODO - notify (UI / audio)
 
     if (Running)
     {

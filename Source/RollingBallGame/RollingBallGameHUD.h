@@ -32,4 +32,7 @@ private:
 
     UFUNCTION()
     void OnRollingBallJumpChargesChanged(int OldValue, int NewValue, EJumpChargeAdjustReasons Reason);
+
+    UFUNCTION()
+    void OnRollingBallAimStateChanged(bool Started);
 };
