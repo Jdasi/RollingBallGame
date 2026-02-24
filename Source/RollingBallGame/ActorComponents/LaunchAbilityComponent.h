@@ -6,8 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "LaunchAbilityComponent.generated.h"
 
-enum EJumpChargeAdjustReasons : uint8;
-class UBallJumpComponent;
 class USphereComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -67,6 +65,9 @@ public:
     UPROPERTY(BlueprintReadOnly, Category="Events")
     FRollingBallAimStateChanged AimStateChanged;
 
+    UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
+    bool Recharge();
+
     ULaunchAbilityComponent();
 
     FORCEINLINE bool IsDisabled() const { return DisableReasons != ELaunchAbilityDisableReasons::None; }
@@ -74,7 +75,6 @@ public:
     void StartAim();
     void EndAim();
     void Launch();
-    void Recharge();
 
 protected:
     virtual void BeginPlay() override;
@@ -100,8 +100,9 @@ private:
     bool IsRunning = false;
     bool AimRequested = false;
 
-    void SetRunning(bool Running);
     void TickLerp(float UnscaledDeltaTime);
+    void SetRunning(bool Running);
+    void RechargeSilent();
     bool HasDisabledReason(ELaunchAbilityDisableReasons Reason) const;
     void SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value);
 };

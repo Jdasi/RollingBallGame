@@ -12,49 +12,6 @@ ULaunchAbilityComponent::ULaunchAbilityComponent()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
-bool ULaunchAbilityComponent::HasDisabledReason(ELaunchAbilityDisableReasons Reason) const
-{
-    return EnumHasAnyFlags(DisableReasons, Reason);
-}
-
-void ULaunchAbilityComponent::SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value)
-{
-    if (HasDisabledReason(Reason) == Value)
-    {
-        return;
-    }
-
-    bool PrevDisabled = DisableReasons != ELaunchAbilityDisableReasons::None;
-
-    if (Value)
-    {
-        DisableReasons |= Reason;
-    }
-    else
-    {
-        DisableReasons &= ~Reason;
-    }
-
-    const bool CurrDisabled = DisableReasons != ELaunchAbilityDisableReasons::None;
-
-    if (CurrDisabled == PrevDisabled)
-    {
-        return;
-    }
-
-    if (CurrDisabled)
-    {
-        SetRunning(false);
-    }
-    else
-    {
-        if (AimRequested)
-        {
-            StartAim();
-        }
-    }
-}
-
 void ULaunchAbilityComponent::StartAim()
 {
     AimRequested = true;
@@ -79,16 +36,21 @@ void ULaunchAbilityComponent::Launch()
     const FVector DirCombined = DirUp + DirRight + DirForward;
 
     Sphere->SetPhysicsLinearVelocity(DirCombined * LaunchForce);
-    // TODO - uncomment once recharge powerups are implemented
-    //SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
+    SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
 
     FTimerDelegate Delegate;
-    Delegate.BindUObject(this, &ULaunchAbilityComponent::Recharge);
+    Delegate.BindUObject(this, &ULaunchAbilityComponent::RechargeSilent);
 }
 
-void ULaunchAbilityComponent::Recharge()
+bool ULaunchAbilityComponent::Recharge()
 {
+    if (!HasDisabledReason(ELaunchAbilityDisableReasons::NoCharge))
+    {
+        return false;
+    }
+
     SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, false);
+    return true;
 }
 
 void ULaunchAbilityComponent::BeginPlay()
@@ -107,8 +69,7 @@ void ULaunchAbilityComponent::BeginPlay()
 
     if (!StartWithCharge)
     {
-        // TODO - uncomment once recharge powerups are implemented
-        //SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
+        SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
     }
 }
 
@@ -178,5 +139,54 @@ void ULaunchAbilityComponent::SetRunning(bool Running)
     else
     {
         GetWorld()->GetSubsystem<UTimeDilationSubsystem>()->ClearRequest(RequesterId);
+    }
+}
+
+// void type needed for timer delegate
+void ULaunchAbilityComponent::RechargeSilent()
+{
+    Recharge();
+}
+
+bool ULaunchAbilityComponent::HasDisabledReason(ELaunchAbilityDisableReasons Reason) const
+{
+    return EnumHasAnyFlags(DisableReasons, Reason);
+}
+
+void ULaunchAbilityComponent::SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value)
+{
+    if (HasDisabledReason(Reason) == Value)
+    {
+        return;
+    }
+
+    bool PrevDisabled = DisableReasons != ELaunchAbilityDisableReasons::None;
+
+    if (Value)
+    {
+        DisableReasons |= Reason;
+    }
+    else
+    {
+        DisableReasons &= ~Reason;
+    }
+
+    const bool CurrDisabled = DisableReasons != ELaunchAbilityDisableReasons::None;
+
+    if (CurrDisabled == PrevDisabled)
+    {
+        return;
+    }
+
+    if (CurrDisabled)
+    {
+        SetRunning(false);
+    }
+    else
+    {
+        if (AimRequested)
+        {
+            StartAim();
+        }
     }
 }
