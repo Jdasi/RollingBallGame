@@ -3,11 +3,18 @@
 #include "BallJumpComponent.h"
 #include "BallMoveComponent.h"
 #include "RollingBallGameCharacter.h"
+#include "RollingBallGamePlayerState.h"
 #include "Components/SphereComponent.h"
 
 UBallJumpComponent::UBallJumpComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UBallJumpComponent::PossessedBy(AController* NewController)
+{
+    PlayerState = NewController->GetPlayerState<ARollingBallGamePlayerState>();
+    AdjustJumpCharges(PlayerState->GetMaxJumpCharges(), EJumpChargeAdjustReasons::OnPossess);
 }
 
 void UBallJumpComponent::Jump()
@@ -51,9 +58,6 @@ void UBallJumpComponent::BeginPlay()
 
     const ARollingBallGameCharacter* RollingBall = Cast<ARollingBallGameCharacter>(GetOwner());
     MoveComponent = RollingBall->MoveComponent;
-
-    MaxJumpCharges = FMath::Clamp(MaxJumpCharges, 0, MAX_JUMP_CHARGES);
-    AdjustJumpCharges(MaxJumpCharges, EJumpChargeAdjustReasons::BeginPlay);
 }
 
 void UBallJumpComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -70,7 +74,7 @@ void UBallJumpComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UBallJumpComponent::HandleGroundedJumpRecharge()
 {
-    if (JumpCharges >= MaxJumpCharges)
+    if (JumpCharges >= PlayerState->GetMaxJumpCharges())
     {
         return;
     }
@@ -94,7 +98,7 @@ void UBallJumpComponent::HandleGroundedJumpRecharge()
 bool UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAdjustReasons Reason)
 {
     const int PrevCharges = JumpCharges;
-    JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, MaxJumpCharges);
+    JumpCharges = FMath::Clamp(JumpCharges + Amount, 0, PlayerState->GetMaxJumpCharges());
 
     if (JumpCharges == PrevCharges)
     {
@@ -103,27 +107,6 @@ bool UBallJumpComponent::AdjustJumpCharges(const int Amount, const EJumpChargeAd
 
     JumpRechargeTimer = JumpRechargeRate;
     JumpChargesChanged.Broadcast(PrevCharges, JumpCharges, Reason);
-
-    return true;
-}
-
-bool UBallJumpComponent::AdjustMaxJumpCharges(int Amount)
-{
-    const int PrevMaxJumpCharges = MaxJumpCharges;
-    MaxJumpCharges = FMath::Clamp(MaxJumpCharges + Amount, 0, MAX_JUMP_CHARGES);
-
-    if (MaxJumpCharges == PrevMaxJumpCharges)
-    {
-        return false;
-    }
-
-    const int Diff = MaxJumpCharges - PrevMaxJumpCharges;
-    AdjustJumpCharges(Diff, EJumpChargeAdjustReasons::MaxChargesChanged);
-
-    if (MaxJumpCharges > PrevMaxJumpCharges)
-    {
-        ClearJumpCooldown();
-    }
 
     return true;
 }

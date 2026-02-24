@@ -6,13 +6,14 @@
 #include "Components/ActorComponent.h"
 #include "BallJumpComponent.generated.h"
 
+class ARollingBallGamePlayerState;
 class UBallMoveComponent;
 
 UENUM(BlueprintType)
 enum EJumpChargeAdjustReasons : uint8
 {
     Generic,
-    BeginPlay,
+    OnPossess,
     Jumped,
     Launched,
     GroundedRecharge,
@@ -25,16 +26,11 @@ class ROLLINGBALLGAME_API UBallJumpComponent : public UActorComponent
     GENERATED_BODY()
 
 public:
-    const int MAX_JUMP_CHARGES = 3;
-
     UPROPERTY(EditAnywhere, Category="Settings")
     float JumpCooldown = 0.5f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     float JumpRechargeRate = 3.0f;
-
-    UPROPERTY(EditAnywhere, Category="Settings", Meta=(Tooltip="Range 0-3", ClampMin="0", ClampMax="3"))
-    int MaxJumpCharges = 3;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     float JumpForce = 1000.0f;
@@ -50,16 +46,11 @@ public:
     FORCEINLINE int GetJumpCharges() const { return JumpCharges; }
 
     UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
-    FORCEINLINE bool HasJumpCharges() const { return JumpCharges > 0; }
-
-    UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
     bool AdjustJumpCharges(int Amount, EJumpChargeAdjustReasons Reason);
-
-    UFUNCTION(BlueprintCallable, Category = "Components|RollingBall", Meta=(Tooltip = "Min 0; Max 3."))
-    bool AdjustMaxJumpCharges(int Amount);
 
     UBallJumpComponent();
 
+    void PossessedBy(AController* NewController);
     void Jump();
     void ClearJumpCooldown();
 
@@ -70,6 +61,9 @@ protected:
 
 private:
     UPROPERTY()
+    ARollingBallGamePlayerState* PlayerState;
+
+    UPROPERTY()
     UBallMoveComponent* MoveComponent;
 
     FTimerHandle JumpCooldownHandle;
@@ -77,5 +71,4 @@ private:
     int JumpCharges = 0;
 
     void HandleGroundedJumpRecharge();
-
 };

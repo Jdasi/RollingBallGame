@@ -20,7 +20,7 @@ void ARollingBallGameHUD::OnPossessRollingBall(ARollingBallGameCharacter* InRoll
     RollingBall->JumpComponent->JumpChargesChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
     RollingBall->LaunchAbilityComponent->AimStateChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallAimStateChanged);
 
-    OnRollingBallJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::BeginPlay);
+    OnRollingBallJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::OnPossess);
     OnRollingBallAimStateChanged(false);
 }
 

@@ -97,4 +97,5 @@ void ARollingBallGameCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	MoveComponent->PossessedBy(NewController);
+	JumpComponent->PossessedBy(NewController);
 }
