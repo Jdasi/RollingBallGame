@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "RollingBallGamePlayerController.generated.h"
 
+class ARollingBallGameHUD;
 class ARollingBallGameCharacter;
 class UInputAction;
 class UInputMappingContext;
@@ -18,7 +19,6 @@ class ARollingBallGamePlayerController : public APlayerController
 	GENERATED_BODY()
 
 protected:
-	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* APawn) override;
 	virtual void OnUnPossess() override;
 	
@@ -30,6 +30,9 @@ protected:
 	void EndAim(const FInputActionValue& InputActionValue);
 	
 private:
+	UPROPERTY()
+	ARollingBallGameHUD* RollingBallHUD = nullptr;
+
 	UPROPERTY()
 	UEnhancedInputComponent* EnhancedInputComponent = nullptr;
 	

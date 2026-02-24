@@ -8,32 +8,30 @@
 #include "UI/JumpChargeGroupWidget.h"
 #include "UI/LaunchReticleWidget.h"
 
-void ARollingBallGameHUD::BeginPlay()
+void ARollingBallGameHUD::OnPossessRollingBall(ARollingBallGameCharacter* InRollingBall)
 {
-    Super::BeginPlay();
-
-    GameViewWidget = CreateWidget<UGameViewWidget>(GetWorld(), GameViewClass);
-    GameViewWidget->AddToViewport();
-
-    if (const APlayerController* RollingBallController = GetOwningPlayerController())
+    if (!GameViewWidget)
     {
-        RollingBall = Cast<ARollingBallGameCharacter>(RollingBallController->GetPawn());
-        RollingBall->JumpComponent->JumpChargesChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
-        RollingBall->LaunchAbilityComponent->AimStateChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallAimStateChanged);
-
-        OnRollingBallJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::BeginPlay);
-        OnRollingBallAimStateChanged(false);
+        GameViewWidget = CreateWidget<UGameViewWidget>(GetWorld(), GameViewClass);
+        GameViewWidget->AddToViewport();
     }
+
+    RollingBall = InRollingBall;
+    RollingBall->JumpComponent->JumpChargesChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
+    RollingBall->LaunchAbilityComponent->AimStateChanged.AddDynamic(this, &ARollingBallGameHUD::OnRollingBallAimStateChanged);
+
+    OnRollingBallJumpChargesChanged(0, RollingBall->JumpComponent->GetJumpCharges(), EJumpChargeAdjustReasons::BeginPlay);
+    OnRollingBallAimStateChanged(false);
 }
 
-void ARollingBallGameHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ARollingBallGameHUD::OnUnPossessRollingBall()
 {
-    Super::EndPlay(EndPlayReason);
-
     if (RollingBall)
     {
         RollingBall->JumpComponent->JumpChargesChanged.RemoveDynamic(this, &ARollingBallGameHUD::OnRollingBallJumpChargesChanged);
         RollingBall->LaunchAbilityComponent->AimStateChanged.RemoveDynamic(this, &ARollingBallGameHUD::OnRollingBallAimStateChanged);
+        RollingBall = nullptr;
+        GameViewWidget->JumpChargeGroup->RefreshJumpCharges(0);
     }
 }
 

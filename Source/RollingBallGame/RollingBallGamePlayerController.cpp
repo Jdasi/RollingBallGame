@@ -4,24 +4,30 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "RollingBallGameCharacter.h"
+#include "RollingBallGameHUD.h"
 #include "Engine/LocalPlayer.h"
 
-void ARollingBallGamePlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
+// seems to be called before BeginPlay (possibly due to GameMode spawning the player which is auto-possessed?)
 void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 {
 	Super::OnPossess(APawn);
-	
+
+	if (!EnhancedInputComponent)
+	{
+		EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
+	}
+
+	if (!RollingBallHUD)
+	{
+		RollingBallHUD = Cast<ARollingBallGameHUD>(GetHUD());
+	}
+
 	RollingBall = Cast<ARollingBallGameCharacter>(APawn);
-	EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
-	
+
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	InputSubsystem->ClearAllMappings();
 	InputSubsystem->AddMappingContext(InputMappingContext, 0);
-	
+
 	if (ActionMove)
 	{
 		EnhancedInputComponent->BindAction(ActionMove, ETriggerEvent::Triggered, this, &ARollingBallGamePlayerController::HandleMove);
@@ -47,11 +53,16 @@ void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 		EnhancedInputComponent->BindAction(ActionAim, ETriggerEvent::Started, this, &ARollingBallGamePlayerController::StartAim);
 		EnhancedInputComponent->BindAction(ActionAim, ETriggerEvent::Completed, this, &ARollingBallGamePlayerController::EndAim);
 	}
+
+	RollingBallHUD->OnPossessRollingBall(RollingBall);
 }
 
 void ARollingBallGamePlayerController::OnUnPossess()
 {
 	EnhancedInputComponent->ClearActionBindings();
+	RollingBallHUD->OnUnPossessRollingBall();
+	RollingBall = nullptr;
+
 	Super::OnUnPossess();
 }
 

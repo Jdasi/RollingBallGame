@@ -9,6 +9,11 @@ UBallMoveComponent::UBallMoveComponent()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
+void UBallMoveComponent::PossessedBy(AController* NewController)
+{
+    Controller = NewController;
+}
+
 void UBallMoveComponent::Move(FVector2d Axis) const
 {
     if (Axis.Length() > 1.0f)
@@ -42,8 +47,6 @@ void UBallMoveComponent::BeginPlay()
 
     const ARollingBallGameCharacter* RollingBall = Cast<ARollingBallGameCharacter>(GetOwner());
     Sphere = RollingBall->GetSphere();
-    Controller = RollingBall->GetController();
-
     Sphere->SetPhysicsMaxAngularVelocityInRadians(MaxAngularVelocity);
 }
 

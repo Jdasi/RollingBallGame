@@ -32,6 +32,7 @@ public:
 
     UBallMoveComponent();
 
+    void PossessedBy(AController* NewController);
     FORCEINLINE bool GetIsGrounded() const { return IsGrounded; }
     void Move(FVector2d Axis) const;
 

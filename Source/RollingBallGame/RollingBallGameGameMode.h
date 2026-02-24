@@ -6,18 +6,27 @@
 #include "GameFramework/GameModeBase.h"
 #include "RollingBallGameGameMode.generated.h"
 
-/**
- *  Simple GameMode for a third person game
- */
+class ARollingBallGamePlayerState;
+class ARollingBallGamePlayerController;
+
 UCLASS(abstract)
 class ARollingBallGameGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	
-	/** Constructor */
-	ARollingBallGameGameMode();
+	UFUNCTION(BlueprintCallable, Category="GameMode")
+	void RespawnPlayer();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY()
+	ARollingBallGamePlayerController* PlayerController;
+
+	UPROPERTY()
+	ARollingBallGamePlayerState* PlayerState;
 };
 
 

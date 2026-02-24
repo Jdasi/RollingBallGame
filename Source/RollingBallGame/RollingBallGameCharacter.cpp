@@ -92,3 +92,9 @@ void ARollingBallGameCharacter::HandleAimEndAction() const
 {
 	LaunchAbilityComponent->EndAim();
 }
+
+void ARollingBallGameCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	MoveComponent->PossessedBy(NewController);
+}

@@ -19,9 +19,8 @@ public:
     UPROPERTY(EditAnywhere)
     TSubclassOf<UGameViewWidget> GameViewClass = nullptr;
 
-protected:
-    virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    void OnPossessRollingBall(ARollingBallGameCharacter* InRollingBall);
+    void OnUnPossessRollingBall();
 
 private:
     UPROPERTY()

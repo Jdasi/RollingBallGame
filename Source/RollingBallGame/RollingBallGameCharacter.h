@@ -53,4 +53,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera = nullptr;
+
+	virtual void PossessedBy(AController* NewController) override;
 };
