@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RollingBallGameCharacter.h"
 #include "Components/ActorComponent.h"
 #include "BallMoveComponent.generated.h"
 
+class AController;
 class USphereComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -33,7 +33,7 @@ public:
     UBallMoveComponent();
 
     FORCEINLINE bool GetIsGrounded() const { return IsGrounded; }
-    void Move(FVector2d Move) const;
+    void Move(FVector2d Axis) const;
 
 protected:
     virtual void BeginPlay() override;

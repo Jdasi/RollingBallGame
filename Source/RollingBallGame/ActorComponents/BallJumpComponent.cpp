@@ -1,6 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BallJumpComponent.h"
+#include "BallMoveComponent.h"
 #include "RollingBallGameCharacter.h"
 #include "Components/SphereComponent.h"
 
@@ -47,6 +48,10 @@ void UBallJumpComponent::ClearJumpCooldown()
 void UBallJumpComponent::BeginPlay()
 {
     Super::BeginPlay();
+
+    const ARollingBallGameCharacter* RollingBall = Cast<ARollingBallGameCharacter>(GetOwner());
+    MoveComponent = RollingBall->MoveComponent;
+
     MaxJumpCharges = FMath::Clamp(MaxJumpCharges, 0, MAX_JUMP_CHARGES);
     AdjustJumpCharges(MaxJumpCharges, EJumpChargeAdjustReasons::BeginPlay);
 }
@@ -67,6 +72,12 @@ void UBallJumpComponent::HandleGroundedJumpRecharge()
 {
     if (JumpCharges >= MaxJumpCharges)
     {
+        return;
+    }
+
+    if (!MoveComponent->GetIsGrounded())
+    {
+        JumpRechargeTimer = JumpRechargeRate;
         return;
     }
 

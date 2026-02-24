@@ -36,7 +36,7 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
 
-	void HandleMoveAction(const FVector2d& Move) const;
+	void HandleMoveAction(const FVector2d& Axis) const;
 	void HandleJumpAction() const;
 	void HandleAimStartAction() const;
 	void HandleAimEndAction() const;

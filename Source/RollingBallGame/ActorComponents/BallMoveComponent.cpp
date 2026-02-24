@@ -9,11 +9,11 @@ UBallMoveComponent::UBallMoveComponent()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UBallMoveComponent::Move(FVector2d Move) const
+void UBallMoveComponent::Move(FVector2d Axis) const
 {
-    if (Move.Length() > 1.0f)
+    if (Axis.Length() > 1.0f)
     {
-        Move.Normalize();
+        Axis.Normalize();
     }
 
     const FRotator ControlRot = Controller->GetControlRotation();
@@ -26,13 +26,13 @@ void UBallMoveComponent::Move(FVector2d Move) const
 
     if (!IsGrounded)
     {
-        const FVector AirForward = FlatForward * Move.Y;
-        const FVector AirRight = FlatRight * Move.X;
+        const FVector AirForward = FlatForward * Axis.Y;
+        const FVector AirRight = FlatRight * Axis.X;
         Sphere->AddForce((AirForward + AirRight) * AirborneForce, NAME_None, true);
     }
 
-    const FVector TorqueForward = FlatForward * -Move.X;
-    const FVector TorqueRight = FlatRight * Move.Y;
+    const FVector TorqueForward = FlatForward * -Axis.X;
+    const FVector TorqueRight = FlatRight * Axis.Y;
     Sphere->AddTorqueInDegrees((TorqueForward + TorqueRight) * TorqueForceToUse, NAME_None, true);
 }
 

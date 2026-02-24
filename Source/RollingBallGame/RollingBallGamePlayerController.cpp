@@ -58,8 +58,8 @@ void ARollingBallGamePlayerController::OnUnPossess()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void ARollingBallGamePlayerController::HandleMove(const FInputActionValue& InputActionValue)
 {
-	const FVector2d MovementVector = InputActionValue.Get<FVector2D>();
-	RollingBall->HandleMoveAction(MovementVector);
+	const FVector2d Axis = InputActionValue.Get<FVector2D>();
+	RollingBall->HandleMoveAction(Axis);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

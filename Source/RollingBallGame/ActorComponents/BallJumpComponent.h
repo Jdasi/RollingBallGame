@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "BallJumpComponent.generated.h"
 
+class UBallMoveComponent;
+
 UENUM(BlueprintType)
 enum EJumpChargeAdjustReasons : uint8
 {
@@ -67,10 +69,12 @@ protected:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+    UPROPERTY()
+    UBallMoveComponent* MoveComponent;
+
     FTimerHandle JumpCooldownHandle;
     float JumpRechargeTimer = 0;
     int JumpCharges = 0;
-    bool IsGrounded = false;
 
     void HandleGroundedJumpRecharge();
 

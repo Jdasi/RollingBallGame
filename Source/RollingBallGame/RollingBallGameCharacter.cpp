@@ -66,9 +66,9 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 	bUseControllerRotationYaw = false;
 }
 
-void ARollingBallGameCharacter::HandleMoveAction(const FVector2d& Move) const
+void ARollingBallGameCharacter::HandleMoveAction(const FVector2d& Axis) const
 {
-	MoveComponent->Move(Move);
+	MoveComponent->Move(Axis);
 }
 
 void ARollingBallGameCharacter::HandleJumpAction() const
