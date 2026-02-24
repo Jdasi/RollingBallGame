@@ -2,7 +2,6 @@
 
 #include "BallMoveComponent.h"
 #include "RollingBallGameCharacter.h"
-#include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 
 UBallMoveComponent::UBallMoveComponent()
@@ -17,11 +16,24 @@ void UBallMoveComponent::Move(FVector2d Move) const
         Move.Normalize();
     }
 
-    const float DeltaTime = GetWorld()->GetDeltaSeconds();
-    const FVector3d Forward = Camera->GetForwardVector() * -Move.X * TorqueForce * DeltaTime;
-    const FVector3d Right = Camera->GetRightVector() * Move.Y * TorqueForce * DeltaTime;
+    const FRotator ControlRot = Controller->GetControlRotation();
+    const FRotator YawRotation(0.0f, ControlRot.Yaw, 0.0f);
+    const FRotationMatrix YawRotationMatrix(YawRotation);
 
-    Sphere->AddTorqueInDegrees(Forward + Right, NAME_None, true);
+    const FVector FlatForward = YawRotationMatrix.GetUnitAxis(EAxis::X);
+    const FVector FlatRight = YawRotationMatrix.GetUnitAxis(EAxis::Y);
+    const float TorqueForceToUse = IsGrounded ? TorqueForce : TorqueForce * 0.33f;
+
+    if (!IsGrounded)
+    {
+        const FVector AirForward = FlatForward * Move.Y;
+        const FVector AirRight = FlatRight * Move.X;
+        Sphere->AddForce((AirForward + AirRight) * AirborneForce, NAME_None, true);
+    }
+
+    const FVector TorqueForward = FlatForward * -Move.X;
+    const FVector TorqueRight = FlatRight * Move.Y;
+    Sphere->AddTorqueInDegrees((TorqueForward + TorqueRight) * TorqueForceToUse, NAME_None, true);
 }
 
 void UBallMoveComponent::BeginPlay()
@@ -30,7 +42,7 @@ void UBallMoveComponent::BeginPlay()
 
     const ARollingBallGameCharacter* RollingBall = Cast<ARollingBallGameCharacter>(GetOwner());
     Sphere = RollingBall->GetSphere();
-    Camera = RollingBall->GetCamera();
+    Controller = RollingBall->GetController();
 
     Sphere->SetPhysicsMaxAngularVelocityInRadians(MaxAngularVelocity);
 }
@@ -38,4 +50,42 @@ void UBallMoveComponent::BeginPlay()
 void UBallMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    const float UnscaledDeltaTime = FApp::GetDeltaTime();
+    TickGeometryCheck(UnscaledDeltaTime);
+}
+
+void UBallMoveComponent::TickGeometryCheck(const float UnscaledDeltaTime)
+{
+    GeometryCheckTimer -= UnscaledDeltaTime;
+
+    if (GeometryCheckTimer > 0)
+    {
+        return;
+    }
+
+    GeometryCheckTimer = 0.1f;
+    PerformGeometryCheck();
+}
+
+void UBallMoveComponent::PerformGeometryCheck()
+{
+    FCollisionObjectQueryParams ObjectParams;
+    ObjectParams.AddObjectTypesToQuery(ECC_GameTraceChannel1);
+
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetOwner());
+
+    const FVector Start = GetOwner()->GetActorLocation();
+    const FVector End = Start - FVector(0.0f, 0.0f, GroundedCheckLength);
+    FHitResult Hit;
+
+    IsGrounded = GetWorld()->SweepSingleByObjectType(
+        Hit,
+        Start,
+        End,
+        FQuat::Identity,
+        ObjectParams,
+        FCollisionShape::MakeSphere(Sphere->GetScaledSphereRadius() * GroundedCheckRadiusFactor),
+        Params);
 }

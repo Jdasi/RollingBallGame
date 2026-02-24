@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RollingBallGameCharacter.h"
 #include "Components/ActorComponent.h"
 #include "BallMoveComponent.generated.h"
 
-class UCameraComponent;
 class USphereComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -16,13 +16,23 @@ class ROLLINGBALLGAME_API UBallMoveComponent : public UActorComponent
 
 public:
     UPROPERTY(EditAnywhere, Category="Settings")
-    float TorqueForce = 500000.0f;
+    float TorqueForce = 8000.0f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float AirborneForce = 750.0f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     float MaxAngularVelocity = 30.0f;
 
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float GroundedCheckLength = 20.0f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float GroundedCheckRadiusFactor = 0.8f;
+
     UBallMoveComponent();
 
+    FORCEINLINE bool GetIsGrounded() const { return IsGrounded; }
     void Move(FVector2d Move) const;
 
 protected:
@@ -31,8 +41,14 @@ protected:
 
 private:
     UPROPERTY()
-    USphereComponent* Sphere = nullptr;
+    AController* Controller = nullptr;
 
     UPROPERTY()
-    UCameraComponent* Camera = nullptr;
+    USphereComponent* Sphere = nullptr;
+
+    float GeometryCheckTimer = 0.0f;
+    bool IsGrounded = false;
+
+    void TickGeometryCheck(float UnscaledDeltaTime);
+    void PerformGeometryCheck();
 };
