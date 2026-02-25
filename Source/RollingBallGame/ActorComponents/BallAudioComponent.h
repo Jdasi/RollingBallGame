@@ -11,6 +11,7 @@ class ULaunchAbilityComponent;
 class UBallJumpComponent;
 class USphereComponent;
 class UBallMoveComponent;
+class USoundCue;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ROLLINGBALLGAME_API UBallAudioComponent : public UActorComponent
@@ -19,25 +20,25 @@ class ROLLINGBALLGAME_API UBallAudioComponent : public UActorComponent
 
 public:
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* RollingSound = nullptr;
+    TObjectPtr<USoundCue> RollingSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* ImpactSound = nullptr;
+    TObjectPtr<USoundCue> ImpactSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* JumpSound = nullptr;
+    TObjectPtr<USoundCue> JumpSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* JumpRechargeSound = nullptr;
+    TObjectPtr<USoundCue> JumpRechargeSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* AimStartSound = nullptr;
+    TObjectPtr<USoundCue> AimStartSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* AimEndSound = nullptr;
+    TObjectPtr<USoundCue> AimEndSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Sound Cues")
-    USoundCue* LaunchSound = nullptr;
+    TObjectPtr<USoundCue> LaunchSound = nullptr;
 
     UPROPERTY(EditAnywhere, Category="Impact Settings")
     float MinImpactThreshold = 300.0f;
