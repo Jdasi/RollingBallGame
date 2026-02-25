@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "RollingBallGameCharacter.generated.h"
 
+class UBallVisualsComponent;
 class UBallAudioComponent;
 class UBallMoveComponent;
 class UBallJumpComponent;
@@ -32,6 +33,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UBallAudioComponent* AudioComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UBallVisualsComponent* VisualsComponent = nullptr;
 
 	ARollingBallGameCharacter();
 

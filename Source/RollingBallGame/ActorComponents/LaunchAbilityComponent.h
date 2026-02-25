@@ -63,6 +63,11 @@ public:
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
     float CameraRotationLagLerpSpeed = 5.0f;
 
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLaunchAvailabilityChanged,
+        bool, Available);
+    UPROPERTY(BlueprintReadOnly, Category="Events")
+    FLaunchAvailabilityChanged LaunchAvailabilityChanged;
+
     DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRollingBallAimStateChanged,
         bool, Started);
     UPROPERTY(BlueprintReadOnly, Category="Events")

@@ -171,6 +171,8 @@ void ULaunchAbilityComponent::SetDisabledReason(ELaunchAbilityDisableReasons Rea
         return;
     }
 
+    LaunchAvailabilityChanged.Broadcast(!CurrDisabled);
+
     if (CurrDisabled)
     {
         SetRunning(false);

@@ -5,6 +5,7 @@
 #include "ActorComponents/BallAudioComponent.h"
 #include "ActorComponents/BallJumpComponent.h"
 #include "ActorComponents/BallMoveComponent.h"
+#include "ActorComponents/BallVisualsComponent.h"
 #include "ActorComponents/LaunchAbilityComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
@@ -71,6 +72,7 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 	JumpComponent = CreateDefaultSubobject<UBallJumpComponent>(TEXT("JumpComponent"));
 	LaunchAbilityComponent = CreateDefaultSubobject<ULaunchAbilityComponent>(TEXT("LaunchAbilityComponent"));
 	AudioComponent = CreateDefaultSubobject<UBallAudioComponent>(TEXT("AudioComponent"));
+	VisualsComponent = CreateDefaultSubobject<UBallVisualsComponent>(TEXT("VisualsComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
