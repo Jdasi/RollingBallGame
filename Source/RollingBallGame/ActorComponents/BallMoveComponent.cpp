@@ -70,21 +70,6 @@ void UBallMoveComponent::BeginPlay()
 void UBallMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    const float UnscaledDeltaTime = FApp::GetDeltaTime();
-    TickGeometryCheck(UnscaledDeltaTime);
-}
-
-void UBallMoveComponent::TickGeometryCheck(const float UnscaledDeltaTime)
-{
-    GeometryCheckTimer -= UnscaledDeltaTime;
-
-    if (GeometryCheckTimer > 0)
-    {
-        return;
-    }
-
-    GeometryCheckTimer = 0.1f;
     PerformGeometryCheck();
 }
 
@@ -96,8 +81,9 @@ void UBallMoveComponent::PerformGeometryCheck()
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(GetOwner());
 
+    const float SphereRadius = Sphere->GetScaledSphereRadius();
     const FVector Start = GetOwner()->GetActorLocation();
-    const FVector End = Start - FVector(0.0f, 0.0f, GroundedCheckLength);
+    FVector End = Start - FVector(0.0f, 0.0f, GroundedCheckLength);
     FHitResult Hit;
 
     IsGrounded = GetWorld()->SweepSingleByObjectType(
@@ -106,6 +92,18 @@ void UBallMoveComponent::PerformGeometryCheck()
         End,
         FQuat::Identity,
         ObjectParams,
-        FCollisionShape::MakeSphere(Sphere->GetScaledSphereRadius() * GroundedCheckRadiusFactor),
+        FCollisionShape::MakeSphere(SphereRadius * GroundedCheckRadiusFactor),
+        Params);
+
+    ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+    End = Start;
+
+    IsTouchingGeometry = GetWorld()->SweepSingleByObjectType(
+        Hit,
+        Start,
+        End,
+        FQuat::Identity,
+        ObjectParams,
+        FCollisionShape::MakeSphere(SphereRadius * 1.1f),
         Params);
 }

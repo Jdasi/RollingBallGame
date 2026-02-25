@@ -33,8 +33,9 @@ public:
     UBallMoveComponent();
 
     void PossessedBy(AController* NewController);
-    FORCEINLINE bool GetIsGrounded() const { return IsGrounded; }
     void Move(FVector2d Axis) const;
+    FORCEINLINE bool GetIsGrounded() const { return IsGrounded; }
+    FORCEINLINE bool GetIsTouchingGeometry() const { return IsTouchingGeometry; }
 
 protected:
     virtual void BeginPlay() override;
@@ -47,9 +48,8 @@ private:
     UPROPERTY()
     USphereComponent* Sphere = nullptr;
 
-    float GeometryCheckTimer = 0.0f;
     bool IsGrounded = false;
+    bool IsTouchingGeometry = false;
 
-    void TickGeometryCheck(float UnscaledDeltaTime);
     void PerformGeometryCheck();
 };

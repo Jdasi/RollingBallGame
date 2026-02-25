@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "RollingBallGameCharacter.generated.h"
 
+class UBallAudioComponent;
 class UBallMoveComponent;
 class UBallJumpComponent;
 class UCameraComponent;
@@ -29,12 +30,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	ULaunchAbilityComponent* LaunchAbilityComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UBallAudioComponent* AudioComponent = nullptr;
+
 	ARollingBallGameCharacter();
 
 	FORCEINLINE USphereComponent* GetSphere() const { return Sphere; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return FollowCamera; }
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
+	FORCEINLINE UAudioComponent* GetRollingLoopAudio() const { return RollingLoopAudio; }
 
 	void HandleMoveAction(const FVector2d& Axis) const;
 	void HandleJumpAction() const;
@@ -53,6 +58,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", Meta=(AllowPrivateAccess = "true"))
+	UAudioComponent* RollingLoopAudio = nullptr;
 
 	virtual void PossessedBy(AController* NewController) override;
 };

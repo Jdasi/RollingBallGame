@@ -1,10 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RollingBallGameCharacter.h"
+
+#include "ActorComponents/BallAudioComponent.h"
 #include "ActorComponents/BallJumpComponent.h"
 #include "ActorComponents/BallMoveComponent.h"
 #include "ActorComponents/LaunchAbilityComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -57,9 +60,17 @@ ARollingBallGameCharacter::ARollingBallGameCharacter()
 		FollowCamera->bUsePawnControlRotation = false;
 	}
 
+	RollingLoopAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("RollingAudio"));
+	if (RollingLoopAudio)
+	{
+		RollingLoopAudio->SetupAttachment(RootComponent);
+		RollingLoopAudio->bAutoActivate = false;
+	}
+
 	MoveComponent = CreateDefaultSubobject<UBallMoveComponent>(TEXT("MoveComponent"));
 	JumpComponent = CreateDefaultSubobject<UBallJumpComponent>(TEXT("JumpComponent"));
 	LaunchAbilityComponent = CreateDefaultSubobject<ULaunchAbilityComponent>(TEXT("LaunchAbilityComponent"));
+	AudioComponent = CreateDefaultSubobject<UBallAudioComponent>(TEXT("AudioComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
