@@ -30,8 +30,8 @@ void ULaunchAbilityComponent::EndAim()
 
 void ULaunchAbilityComponent::Launch()
 {
-    const FVector DirUp = FVector::UpVector * 0.15f;
-    const FVector DirRight = Camera->GetRightVector() * 0.05f;
+    const FVector DirUp = FVector::UpVector * LaunchUpFactor;
+    const FVector DirRight = Camera->GetRightVector() * LaunchRightFactor;
     const FVector DirForward = Camera->GetForwardVector();
     const FVector DirCombined = DirUp + DirRight + DirForward;
 

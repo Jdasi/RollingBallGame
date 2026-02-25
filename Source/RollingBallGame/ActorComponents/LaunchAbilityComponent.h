@@ -28,6 +28,12 @@ public:
     float LaunchForce = 3000.0f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
+    float LaunchUpFactor = 0.15f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
+    float LaunchRightFactor = 0.05f;
+
+    UPROPERTY(EditAnywhere, Category="Settings")
     float LaunchCooldown = 5.0f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
