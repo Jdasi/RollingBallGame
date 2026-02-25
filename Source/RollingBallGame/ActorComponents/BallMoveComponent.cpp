@@ -33,7 +33,24 @@ void UBallMoveComponent::Move(FVector2d Axis) const
     {
         const FVector AirForward = FlatForward * Axis.Y;
         const FVector AirRight = FlatRight * Axis.X;
-        Sphere->AddForce((AirForward + AirRight) * AirborneForce, NAME_None, true);
+        const FVector AirMoveDir = AirForward + AirRight;
+
+        FVector FlatVelocity = Sphere->GetPhysicsLinearVelocity();
+        double FlatSpeed = FlatVelocity.Length();
+        FlatVelocity.Z = 0;
+        FlatVelocity.Normalize();
+
+        FVector AirMoveForce = AirMoveDir * AirborneForce;
+        const double SpeedFactor = FMath::Clamp(FlatSpeed / 500, 0, 1);
+        const double Dot = FVector::DotProduct(AirMoveDir, FlatVelocity);
+
+        if (Dot > 0)
+        {
+            // air control shouldn't overpower your airborne speed
+            AirMoveForce *= 1 - Dot * SpeedFactor;
+        }
+
+        Sphere->AddForce(AirMoveForce, NAME_None, true);
     }
 
     const FVector TorqueForward = FlatForward * -Axis.X;
