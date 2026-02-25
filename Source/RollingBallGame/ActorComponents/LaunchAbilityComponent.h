@@ -25,7 +25,7 @@ class ROLLINGBALLGAME_API ULaunchAbilityComponent : public UActorComponent
 
 public:
     UPROPERTY(EditAnywhere, Category="Settings")
-    float LaunchForce = 3000.0f;
+    float LaunchForce = 3500.0f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     float LaunchUpFactor = 0.15f;
@@ -34,42 +34,43 @@ public:
     float LaunchRightFactor = 0.05f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
-    float LaunchCooldown = 5.0f;
+    float TimeDilation = 0.1f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
-    float TimeDilation = 0.4f;
-
-    UPROPERTY(EditAnywhere, Category="Settings")
-    float ExitAimDelay = 0.5f;
+    float ExitAimDelay = 0.1f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
     bool StartWithCharge = false;
 
     UPROPERTY(EditAnywhere, Category="Lerp Targets")
-    FVector OffsetLerpTarget = FVector::ZeroVector;
+    FVector OffsetLerpTarget = FVector(75.0f, 125.0f, 25.0f);
 
     UPROPERTY(EditAnywhere, Category="Lerp Targets")
     float FovLerpTarget = 50.0f;
 
     UPROPERTY(EditAnywhere, Category="Lerp Targets")
-    float CameraLagLerpTarget = 1.0f;
+    float CameraLagLerpTarget = 100.0f;
 
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
     float OffsetLerpSpeed = 10.0f;
 
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
-    float FovLerpSpeed = 10.0f;
+    float FovLerpSpeed = 7.0f;
 
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
-    float CameraLagLerpSpeed = 10.0f;
+    float CameraLagLerpSpeed = 5.0f;
 
     UPROPERTY(EditAnywhere, Category="Lerp Speeds")
-    float CameraRotationLagLerpSpeed = 10.0f;
+    float CameraRotationLagLerpSpeed = 5.0f;
 
     DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRollingBallAimStateChanged,
         bool, Started);
     UPROPERTY(BlueprintReadOnly, Category="Events")
     FRollingBallAimStateChanged AimStateChanged;
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRollingBallLaunched);
+    UPROPERTY(BlueprintReadOnly, Category="Events")
+    FRollingBallLaunched Launched;
 
     UFUNCTION(BlueprintCallable, Category = "Components|RollingBall")
     bool Recharge();
@@ -108,7 +109,6 @@ private:
 
     void TickLerp(float UnscaledDeltaTime);
     void SetRunning(bool Running);
-    void RechargeSilent();
     bool HasDisabledReason(ELaunchAbilityDisableReasons Reason) const;
     void SetDisabledReason(ELaunchAbilityDisableReasons Reason, bool Value);
 };

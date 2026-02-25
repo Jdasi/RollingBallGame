@@ -4,6 +4,7 @@
 
 #include "BallJumpComponent.h"
 #include "BallMoveComponent.h"
+#include "LaunchAbilityComponent.h"
 #include "RollingBallGameCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -26,11 +27,13 @@ void UBallAudioComponent::BeginPlay()
     LaunchAbilityComponent = RollingBall->LaunchAbilityComponent;
     RollingLoopAudio = RollingBall->GetRollingLoopAudio();
 
-    Sphere->OnComponentHit.AddDynamic(this, &UBallAudioComponent::OnHit);
+    Sphere->OnComponentHit.AddDynamic(this, &UBallAudioComponent::OnBallImpact);
     RollingLoopAudio->SetSound(RollingSound);
     RollingLoopAudio->Play();
 
-    JumpComponent->JumpChargesChanged.AddDynamic(this, &UBallAudioComponent::JumpChargesChanged);
+    JumpComponent->JumpChargesChanged.AddDynamic(this, &UBallAudioComponent::OnBallJumpChargesChanged);
+    LaunchAbilityComponent->AimStateChanged.AddDynamic(this, &UBallAudioComponent::OnBallAimStateChanged);
+    LaunchAbilityComponent->Launched.AddDynamic(this, &UBallAudioComponent::OnBallLaunched);
 }
 
 void UBallAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -40,7 +43,7 @@ void UBallAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UBallAudioComponent::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void UBallAudioComponent::OnBallImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     const float Strength = NormalImpulse.Length();
 
@@ -55,7 +58,7 @@ void UBallAudioComponent::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UBallAudioComponent::JumpChargesChanged(int32 OldValue, int32 NewValue, EJumpChargeAdjustReasons Reason)
+void UBallAudioComponent::OnBallJumpChargesChanged(int32 OldValue, int32 NewValue, EJumpChargeAdjustReasons Reason)
 {
     switch (Reason)
     {
@@ -66,9 +69,22 @@ void UBallAudioComponent::JumpChargesChanged(int32 OldValue, int32 NewValue, EJu
     }
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UBallAudioComponent::OnBallAimStateChanged(bool Started)
+{
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), Started ? AimStartSound : AimEndSound, Sphere->GetComponentLocation());
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UBallAudioComponent::OnBallLaunched()
+{
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, Sphere->GetComponentLocation());
+}
+
 void UBallAudioComponent::UpdateRollingAudio() const
 {
     const FVector Velocity = MoveComponent->GetOwner()->GetVelocity();
-    const float Speed = MoveComponent->GetIsTouchingGeometry() ? Velocity.Length() : 0;
+    const float TimeDilation = GetWorld()->GetWorldSettings()->GetEffectiveTimeDilation();
+    const float Speed = MoveComponent->GetIsTouchingGeometry() ? Velocity.Length() * TimeDilation : 0;
     RollingLoopAudio->SetFloatParameter(TEXT("BallSpeed"), Speed);
 }

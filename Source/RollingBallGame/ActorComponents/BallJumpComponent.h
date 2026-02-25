@@ -27,13 +27,13 @@ class ROLLINGBALLGAME_API UBallJumpComponent : public UActorComponent
 
 public:
     UPROPERTY(EditAnywhere, Category="Settings")
-    float JumpCooldown = 0.5f;
+    float JumpCooldown = 0.25f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
-    float JumpRechargeRate = 3.0f;
+    float JumpRechargeRate = 0.5f;
 
     UPROPERTY(EditAnywhere, Category="Settings")
-    float JumpForce = 1000.0f;
+    float JumpForce = 800.0f;
 
     DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FRollingBallJumpChargesChanged,
         int32, OldValue,

@@ -38,8 +38,7 @@ void ULaunchAbilityComponent::Launch()
     Sphere->SetPhysicsLinearVelocity(DirCombined * LaunchForce);
     SetDisabledReason(ELaunchAbilityDisableReasons::NoCharge, true);
 
-    FTimerDelegate Delegate;
-    Delegate.BindUObject(this, &ULaunchAbilityComponent::RechargeSilent);
+    Launched.Broadcast();
 }
 
 bool ULaunchAbilityComponent::Recharge()
@@ -140,12 +139,6 @@ void ULaunchAbilityComponent::SetRunning(bool Running)
     {
         GetWorld()->GetSubsystem<UTimeDilationSubsystem>()->ClearRequest(RequesterId);
     }
-}
-
-// void type needed for timer delegate
-void ULaunchAbilityComponent::RechargeSilent()
-{
-    Recharge();
 }
 
 bool ULaunchAbilityComponent::HasDisabledReason(ELaunchAbilityDisableReasons Reason) const

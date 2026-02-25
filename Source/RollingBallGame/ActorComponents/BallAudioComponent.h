@@ -30,6 +30,15 @@ public:
     UPROPERTY(EditAnywhere, Category="Sound Cues")
     USoundCue* JumpRechargeSound = nullptr;
 
+    UPROPERTY(EditAnywhere, Category="Sound Cues")
+    USoundCue* AimStartSound = nullptr;
+
+    UPROPERTY(EditAnywhere, Category="Sound Cues")
+    USoundCue* AimEndSound = nullptr;
+
+    UPROPERTY(EditAnywhere, Category="Sound Cues")
+    USoundCue* LaunchSound = nullptr;
+
     UPROPERTY(EditAnywhere, Category="Impact Settings")
     float MinImpactThreshold = 300.0f;
 
@@ -42,7 +51,6 @@ public:
     UBallAudioComponent();
 
 protected:
-    UFUNCTION()
     virtual void BeginPlay() override;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -63,10 +71,16 @@ private:
     UAudioComponent* RollingLoopAudio;
 
     UFUNCTION()
-    void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    void OnBallImpact(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     UFUNCTION()
-    void JumpChargesChanged(int32 OldValue, int32 NewValue, EJumpChargeAdjustReasons Reason);
+    void OnBallJumpChargesChanged(int32 OldValue, int32 NewValue, EJumpChargeAdjustReasons Reason);
+
+    UFUNCTION()
+    void OnBallAimStateChanged(bool Started);
+
+    UFUNCTION()
+    void OnBallLaunched();
 
     void UpdateRollingAudio() const;
 };
