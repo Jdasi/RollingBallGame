@@ -9,6 +9,7 @@
 
 class ARollingBallGameHUD;
 class ARollingBallGameCharacter;
+class UEnhancedInputComponent;
 class UInputAction;
 class UInputMappingContext;
 class UUserWidget;
