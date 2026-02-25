@@ -14,17 +14,25 @@ class ROLLINGBALLGAME_API ARollingBallGamePlayerState : public APlayerState
 public:
     const int MAX_JUMP_CHARGES = 3;
 
-    FORCEINLINE AActor* GetCheckpoint() const { return Checkpoint; }
-    void SetCheckpoint(AActor* InCheckpoint);
-
-    FORCEINLINE int GetMaxJumpCharges() const { return MaxJumpCharges; }
     UFUNCTION(BlueprintCallable, Category = "State|RollingBall")
     bool AdjustMaxJumpCharges(int Amount);
+
+    UFUNCTION(BlueprintCallable, Category = "State|RollingBall")
+    void MoveCheckpoint(const USceneComponent* InComponent);
+
+    UPROPERTY(EditAnywhere, Category = "Settings")
+    TSubclassOf<AActor> MoveableSpawnClass = nullptr;
+
+    FORCEINLINE AActor* GetCheckpoint() const { return Checkpoint; }
+    FORCEINLINE int GetMaxJumpCharges() const { return MaxJumpCharges; }
 
 protected:
     virtual void BeginPlay() override;
 
 private:
+    UPROPERTY()
+    AActor* MoveableSpawn = nullptr;
+
     UPROPERTY()
     AActor* Checkpoint = nullptr;
 

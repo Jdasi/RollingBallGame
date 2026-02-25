@@ -4,16 +4,34 @@
 #include "RollingBallGameCharacter.h"
 #include "RollingBallGamePlayerController.h"
 #include "ActorComponents/BallJumpComponent.h"
-
-void ARollingBallGamePlayerState::SetCheckpoint(AActor* InCheckpoint)
-{
-    Checkpoint = InCheckpoint;
-}
+#include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
 
 void ARollingBallGamePlayerState::BeginPlay()
 {
     Super::BeginPlay();
     AdjustMaxJumpCharges(MaxJumpCharges);
+
+    if (AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()))
+    {
+        Checkpoint = PlayerStart;
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Failed to find player start");
+    }
+}
+
+void ARollingBallGamePlayerState::MoveCheckpoint(const USceneComponent* InComponent)
+{
+    if (!MoveableSpawn)
+    {
+        MoveableSpawn = GetWorld()->SpawnActor<AActor>(MoveableSpawnClass, InComponent->GetComponentLocation(), InComponent->GetComponentRotation());
+        Checkpoint = MoveableSpawn;
+    }
+
+    Checkpoint->SetActorLocation(InComponent->GetComponentLocation());
+    Checkpoint->SetActorRotation(InComponent->GetComponentRotation());
 }
 
 bool ARollingBallGamePlayerState::AdjustMaxJumpCharges(int Amount)

@@ -3,8 +3,6 @@
 #include "RollingBallGameGameMode.h"
 #include "RollingBallGamePlayerController.h"
 #include "RollingBallGamePlayerState.h"
-#include "GameFramework/PlayerStart.h"
-#include "Kismet/GameplayStatics.h"
 
 void ARollingBallGameGameMode::RespawnPlayer()
 {
@@ -28,13 +26,4 @@ void ARollingBallGameGameMode::BeginPlay()
 
     PlayerController = Cast<ARollingBallGamePlayerController>(GetWorld()->GetFirstPlayerController());
     PlayerState = PlayerController->GetPlayerState<ARollingBallGamePlayerState>();
-
-    if (AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()))
-    {
-        PlayerState->SetCheckpoint(PlayerStart);
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Failed to find player start");
-    }
 }
