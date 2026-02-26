@@ -8,6 +8,10 @@
 #include "Engine/LocalPlayer.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#if WITH_EDITOR
+#include "RollingBallGamePlayerState.h"
+#endif
+
 // seems to be called before BeginPlay (possibly due to GameMode spawning the player which is auto-possessed?)
 void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 {
@@ -65,6 +69,11 @@ void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 		EnhancedInputComponent->BindAction(ActionReload, ETriggerEvent::Triggered, this, &ARollingBallGamePlayerController::RestartLevel);
 	}
 
+	if (ActionDebugAddJumpCharge)
+	{
+		EnhancedInputComponent->BindAction(ActionDebugAddJumpCharge, ETriggerEvent::Triggered, this, &ARollingBallGamePlayerController::DebugAddJumpCharge);
+	}
+
 	RollingBallHUD->OnPossessRollingBall(RollingBall);
 }
 
@@ -118,4 +127,13 @@ void ARollingBallGamePlayerController::EndAim(const FInputActionValue& InputActi
 void ARollingBallGamePlayerController::Quit()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), this, EQuitPreference::Quit, false);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void ARollingBallGamePlayerController::DebugAddJumpCharge()
+{
+#if WITH_EDITOR
+	ARollingBallGamePlayerState* RollingBallPlayerState = Cast<ARollingBallGamePlayerState>(PlayerState);
+	RollingBallPlayerState->AdjustMaxJumpCharges(1);
+#endif
 }
