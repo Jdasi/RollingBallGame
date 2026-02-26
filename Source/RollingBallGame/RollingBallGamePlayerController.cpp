@@ -6,6 +6,7 @@
 #include "RollingBallGameCharacter.h"
 #include "RollingBallGameHUD.h"
 #include "Engine/LocalPlayer.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // seems to be called before BeginPlay (possibly due to GameMode spawning the player which is auto-possessed?)
 void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
@@ -52,6 +53,16 @@ void ARollingBallGamePlayerController::OnPossess(APawn* APawn)
 	{
 		EnhancedInputComponent->BindAction(ActionAim, ETriggerEvent::Started, this, &ARollingBallGamePlayerController::StartAim);
 		EnhancedInputComponent->BindAction(ActionAim, ETriggerEvent::Completed, this, &ARollingBallGamePlayerController::EndAim);
+	}
+
+	if (ActionQuit)
+	{
+		EnhancedInputComponent->BindAction(ActionQuit, ETriggerEvent::Triggered, this, &ARollingBallGamePlayerController::Quit);
+	}
+
+	if (ActionReload)
+	{
+		EnhancedInputComponent->BindAction(ActionReload, ETriggerEvent::Triggered, this, &ARollingBallGamePlayerController::RestartLevel);
 	}
 
 	RollingBallHUD->OnPossessRollingBall(RollingBall);
@@ -104,3 +115,7 @@ void ARollingBallGamePlayerController::EndAim(const FInputActionValue& InputActi
 	RollingBall->HandleAimEndAction();
 }
 
+void ARollingBallGamePlayerController::Quit()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), this, EQuitPreference::Quit, false);
+}
