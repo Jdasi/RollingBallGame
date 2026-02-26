@@ -22,20 +22,23 @@ class ROLLINGBALLGAME_API ARollingBallGameCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="RollingBall|Components")
 	UBallMoveComponent* MoveComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="RollingBall|Components")
 	UBallJumpComponent* JumpComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="RollingBall|Components")
 	ULaunchAbilityComponent* LaunchAbilityComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="RollingBall|Components")
 	UBallAudioComponent* AudioComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="RollingBall|Components")
 	UBallVisualsComponent* VisualsComponent = nullptr;
+
+	UFUNCTION(BlueprintCallable, Category="RollingBall|Helpers")
+	void TeleportBall(AActor* TeleportTarget);
 
 	ARollingBallGameCharacter();
 

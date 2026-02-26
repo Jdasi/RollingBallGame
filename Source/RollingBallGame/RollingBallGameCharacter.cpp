@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RollingBallGameCharacter.h"
-
 #include "ActorComponents/BallAudioComponent.h"
 #include "ActorComponents/BallJumpComponent.h"
 #include "ActorComponents/BallMoveComponent.h"
@@ -11,6 +10,23 @@
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+
+void ARollingBallGameCharacter::TeleportBall(AActor* TeleportTarget)
+{
+	CameraBoom->bEnableCameraLag = false;
+	CameraBoom->bEnableCameraRotationLag = false;
+
+	SetActorLocationAndRotation(TeleportTarget->GetActorLocation(), TeleportTarget->GetActorRotation(), false, nullptr, ETeleportType::ResetPhysics);
+	GetController()->SetControlRotation(TeleportTarget->GetActorRotation());
+	Sphere->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	Sphere->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+
+	GetWorldTimerManager().SetTimerForNextTick([this]()
+	{
+		CameraBoom->bEnableCameraLag = true;
+		CameraBoom->bEnableCameraRotationLag = true;
+	});
+}
 
 ARollingBallGameCharacter::ARollingBallGameCharacter()
 {
