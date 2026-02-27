@@ -14,9 +14,16 @@ A simple platforming prototype made in Unreal 5.7.3, primarily written in C++ an
 - World subsystem to control slo-mo
 - Player ability persistence via custom PlayerState
 
+# Tools Used
+- Unreal
+- Rider
+- Photoshop
+- Blender
+- Audacity
+
 # Credits
 - Audio sourced from Freesound.org
-- Images found on google and edited in Photoshop
+- Images sourced from google
 
 # Screenshots
 
